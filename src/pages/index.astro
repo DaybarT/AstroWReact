@@ -1,6 +1,24 @@
 ---
-import Welcome from '../components/Card';
-import '../styles/global.astro';
+import Card from "../components/Card";
+import NeonCheckbox from "../components/NeonCheckbox";
+import Searcher from "../components/Searcher";
+
+import "../styles/global.astro";
+import fs from "fs";
+import path from "path";
+// Ruta del archivo JSON local
+const filePath = path.resolve("./data/stock.json");
+
+// Leer el archivo JSON de manera síncrona
+let productData = [];
+try {
+	const rawData = fs.readFileSync(filePath, "utf-8");
+	productData = JSON.parse(rawData);
+} catch (error) {
+	console.error("Error leyendo el archivo JSON:", error);
+}
+
+// Pasar los datos al componente Card
 ---
 
 <html lang="en">
@@ -12,6 +30,23 @@ import '../styles/global.astro';
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="container">
+			<div class="div-login">
+				<NeonCheckbox client:load />
+				<!-- <Searcher/> -->
+			</div>
+			<br />
+			<div class="div-father">
+				{
+					productData.length === 0 ? (
+						<div style="padding-top: 150px; font-size: 100px; background-color:#090b11;">NO STOCK</div>
+					) : (
+						productData.map((product, index) => (
+							<Card key={index} {...product} />
+						))
+					)
+				}
+			</div>
+		</div>
 	</body>
 </html>
