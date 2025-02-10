@@ -6,6 +6,8 @@ import Searcher from "../components/Searcher";
 import "../styles/global.astro";
 import fs from "fs";
 import path from "path";
+import scrapper from "../functions/scrapper";
+
 // Ruta del archivo JSON local
 const filePath = path.resolve("./data/stock.json");
 
@@ -27,13 +29,20 @@ try {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>DaybarT-Shop</title>
+		<script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 	</head>
 	<body>
 		<div class="container">
 			<div class="div-login">
 				<NeonCheckbox client:load />
 				<!-- <Searcher/> -->
+				<button on:click={() => {
+					
+					scrapper('IF6490');
+				}}>Buscar</button>
+
+				
 			</div>
 			<br />
 			<div class="div-father">
