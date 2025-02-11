@@ -1,27 +1,64 @@
-import puppeteer from 'puppeteer';
+import puppeteer from "puppeteer";
 
-async function scrapePage(url) {
+export default async function scrapeInfo(sku) {
   // Lanza el navegador en modo headless (sin interfaz gráfica)
   const browser = await puppeteer.launch();
-  
+
   // Abre una nueva página en el navegador
   const page = await browser.newPage();
 
   // Navega a la URL proporcionada
+  const url = "https://hypeboost.com/es/search/shop?keyword=" + sku.trim();
   await page.goto(url, { waitUntil: "domcontentloaded" });
 
-  // Extrae el título de la página
-  const titulo = await page.title();
-  console.log("Título de la página:", titulo);
+  const spanText = await page.$eval(".grey", (span) => span.innerText);
+  console.log(spanText);
 
-  // Extrae todos los enlaces <a> de la página
-  const enlaces = await page.$$eval("a", enlaces => enlaces.map(a => a.href));
-  console.log("Enlaces encontrados:");
-  enlaces.forEach(enlace => console.log(enlace));
+  if (sku.trim() == spanText) {
+    const imgSrc = await page.$eval(".image img", (img) =>
+      img.getAttribute("src")
+    );
+    console.log(imgSrc);
 
+    const strongText = await page.$eval(
+      ".info strong",
+      (strong) => strong.innerText
+    );
+    console.log(strongText);
+
+    const data = {
+      SKU: spanText,
+      Title: strongText,
+      img: imgSrc,
+    };
+  }
   // Cierra el navegador
   await browser.close();
-}
 
-// Llama a la función con la URL que quieras raspar
-scrapePage("https://example.com");
+  return data;
+}
+/* scrapeInfo('HQ3073-100'); */
+
+//de momento no hace falta, sin funcionamiento
+/* async function scrapeInfo(sku){ */
+
+// Lanza el navegador en modo headless (sin interfaz gráfica)
+/* const browser = await puppeteer.launch(); */
+
+// Abre una nueva página en el navegador
+/* const page = await browser.newPage(); */
+
+// Navega a la URL proporcionada
+/* const url = "https://hypeboost.com/es/search/shop?keyword="+sku;
+  await page.goto(url, { waitUntil: "domcontentloaded" }); */
+
+/* const sizes = await page.$eval('.sizes', div => div.innerText); */
+//saca las tallas y los precios, por el momento no hace falta
+//para hacer funcionar esto, hay que hacer que llegue a la pagina del producto.
+
+/* const imgSrc = await page.$eval('.item img', img => img.getAttribute('src'));
+  console.log(imgSrc); */
+
+// Cierra el navegador
+/*   await browser.close()
+} */
