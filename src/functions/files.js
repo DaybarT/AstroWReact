@@ -167,99 +167,187 @@ export async function findDataExist(sku) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 export async function addStock(newData) {
-    // Verificar si el archivo existe, si no, lo creamos vacío
-    if (!fs.existsSync(stockPath)) {
-      fs.writeFileSync(stockPath, JSON.stringify([])); // Escribir un JSON vacío
-      return;
-    }
+  const results = [];
+  let headers = [];
   
-    try {
-      // Leer el archivo JSON
-      const fileData = await fs.promises.readFile(stockPath, "utf8");
-  
-      let jsonData = [];
-  
-      if (fileData.trim() !== "") {
-        jsonData = JSON.parse(fileData); // Convertir el archivo JSON a un array
-      }
-  
-      // Buscar el SKU existente
-      const existingItem = jsonData.find(item => item.SKU === newData.SKU);
-  
-      if (existingItem) {
-        // Si ya existe, agregar la nueva talla al campo de tallas
-        const existingSizes = existingItem.sizes || []; // Obtener las tallas registradas (si las hay)
-        const newSizes = Array.isArray(newData.sizes) ? newData.sizes : newData.sizes.split(","); // Asegurarse de que sizes sea un array
-  
-        // Agregar las nuevas tallas solo si no están ya registradas
-        newSizes.forEach(size => {
-          if (!existingSizes.includes(size)) {
-            existingItem.sizes = [...existingSizes, size]; // Concatenar tallas
-          }
-        });
-
-
-        existingItem.sizes = existingItem.sizes
-        .map(Number)  // Convertir las tallas a números
-        .sort((a, b) => a - b)  // Ordenar numéricamente
-        .map(String);  // Volver a convertir las tallas a cadenas
-
-        console.log(`Las tallas para SKU ${newData.SKU} se han actualizado: ${existingItem.sizes}`);
-      } else {
-        // Si el SKU no existe, agregarlo como nuevo objeto
-        jsonData.push(newData);
-        console.log(`Nuevo SKU agregado: ${newData.SKU}`);
-      }
-  
-      // Escribir los datos modificados de vuelta al archivo
-      await fs.promises.writeFile(stockPath, JSON.stringify(jsonData, null, 2));
-      console.log(`Datos agregados correctamente a ${stockPath}: SKU ${newData.SKU}`);
-      
-    } catch (err) {
-      console.error("Error al leer o escribir el archivo:", err);
-    }
-}
-
-export async function removeStock(sku) {
   if (!fs.existsSync(stockPath)) {
-    console.log("El archivo no existe.");
+    const header = ['SKU', 'Title', 'img', 'sizes'];
+    fs.writeFileSync(stockPath, `${header.join(',')}\n`);
+    console.log("Archivo creado con cabeceras.");
     return;
   }
 
-  fs.readFile(stockPath, "utf8", (err, fileData) => {
-    if (err) {
-      console.error("Error al leer el archivo:", err);
-      return;
-    }
+  const data = await new Promise((resolve, reject) => {
+    const parsedData = [];
+    fs.createReadStream(stockPath)
+      .pipe(csvParser({ headers: false, skipEmptyLines: true }))
+      .on('data', (row) => {
+        if (headers.length === 0) {
+          headers = Object.values(row);
+        } else {
+          const rowObj = {};
+          Object.entries(row).forEach(([index, value]) => {
+            rowObj[headers[index]] = value;
+          });
 
-    let jsonData = [];
-
-    if (fileData.trim() !== "") {
-      try {
-        jsonData = JSON.parse(fileData); // Convertir JSON a array
-      } catch (error) {
-        console.error("Error al parsear JSON:", error);
-        return; // Detenemos la ejecución si el JSON está corrupto
-      }
-    }
-
-    // Buscar el objeto con el SKU que queremos eliminar
-    const indexToRemove = jsonData.findIndex(item => item.SKU === sku);
-
-    if (indexToRemove === -1) {
-      console.log(`El SKU ${sku} no se encontró en la base de datos.`);
-      return; // Si el SKU no existe, no hacemos nada
-    }
-
-    // Eliminar el objeto con el SKU encontrado
-    jsonData.splice(indexToRemove, 1);
-
-    fs.writeFile(stockPath, JSON.stringify(jsonData, null, 2), (err) => {
-      if (err) {
-        console.error("Error al guardar el archivo después de eliminar:", err);
-      } else {
-        console.log(`El SKU ${sku} ha sido eliminado correctamente.`);
-      }
-    });
+          if (rowObj.SKU && rowObj.SKU.trim() !== 'SKU') {
+            rowObj.sizes = rowObj.sizes ? rowObj.sizes.split('|').map(Number) : [];
+            parsedData.push(rowObj);
+          }
+        }
+      })
+      .on('end', () => resolve(parsedData))
+      .on('error', (err) => reject("Error al leer el archivo CSV: " + err));
   });
+
+  const existingItem = data.find((item) => item.SKU === newData.SKU);
+
+  if (existingItem) {
+    const existingSizes = existingItem.sizes || [];
+    const newSizes = newData.sizes || [];
+    const updatedSizes = Array.from(new Set([...existingSizes, ...newSizes])).sort((a, b) => a - b);
+    existingItem.sizes = updatedSizes;
+    console.log(`Actualizado SKU ${newData.SKU} con nuevas tallas: ${updatedSizes.join(', ')}`);
+  } else {
+    results.push({
+      SKU: newData.SKU,
+      Title: newData.Title,
+      img: newData.img,
+      sizes: newData.sizes.sort((a, b) => a - b)
+    });
+    console.log(`Nuevo SKU agregado: ${newData.SKU}`);
+  }
+
+  const writeStream = fs.createWriteStream(stockPath);
+  const csvStream = format({ headers: true });
+
+  csvStream.pipe(writeStream);
+  [...data, ...results].forEach((item) => {
+    csvStream.write({ ...item, sizes: item.sizes.join('|') });
+  });
+
+  csvStream.end();
+}
+
+/* addStock({
+  SKU: "HQ3073-101",
+  Title: "Nike Air Max",
+  img: "https://example.com/image.jpg",
+  sizes: [44]
+}); */
+
+export async function removeStock(SKU) {
+  if (!fs.existsSync(stockPath)) {
+    console.log("El archivo no existe. No hay stock para eliminar.");
+    return;
+  }
+
+  const data = await new Promise((resolve, reject) => {
+    const parsedData = [];
+    let headers = [];
+
+    fs.createReadStream(stockPath)
+      .pipe(csvParser({ headers: false, skipEmptyLines: true }))
+      .on('data', (row) => {
+        if (headers.length === 0) {
+          headers = Object.values(row);
+        } else {
+          const rowObj = {};
+          Object.entries(row).forEach(([index, value]) => {
+            rowObj[headers[index]] = value;
+          });
+
+          if (rowObj.SKU && rowObj.SKU.trim() !== 'SKU') {
+            parsedData.push(rowObj);
+          }
+        }
+      })
+      .on('end', () => resolve(parsedData))
+      .on('error', (err) => reject("Error al leer el archivo CSV: " + err));
+  });
+
+  const filteredData = data.filter(item => item.SKU !== SKU);
+
+  if (filteredData.length === data.length) {
+    console.log(`El SKU ${SKU} no se encontró en el stock.`);
+    return;
+  }
+
+  console.log(`El SKU ${SKU} ha sido eliminado del stock.`);
+
+  // Escribir los datos actualizados de vuelta al archivo CSV
+  const writeStream = fs.createWriteStream(stockPath);
+  const csvStream = format({ headers: true });
+
+  csvStream.pipe(writeStream);
+  filteredData.forEach(item => {
+    csvStream.write(item);
+  });
+
+  csvStream.end();
+}
+/* removeStock("HQ3073-101"); */
+
+export async function removeStockSize(newData) {
+  const results = [];
+  let headers = [];
+
+  if (!fs.existsSync(stockPath)) {
+    console.log("El archivo no existe. No hay stock para modificar.");
+    return;
+  }
+
+  const data = await new Promise((resolve, reject) => {
+    const parsedData = [];
+    fs.createReadStream(stockPath)
+      .pipe(csvParser({ headers: false, skipEmptyLines: true }))
+      .on('data', (row) => {
+        if (headers.length === 0) {
+          headers = Object.values(row);
+        } else {
+          const rowObj = {};
+          Object.entries(row).forEach(([index, value]) => {
+            rowObj[headers[index]] = value;
+          });
+
+          if (rowObj.SKU && rowObj.SKU.trim() !== 'SKU') {
+            rowObj.sizes = rowObj.sizes ? rowObj.sizes.split('|').map(Number) : [];
+            parsedData.push(rowObj);
+          }
+        }
+      })
+      .on('end', () => resolve(parsedData))
+      .on('error', (err) => reject("Error al leer el archivo CSV: " + err));
+  });
+
+  const existingItem = data.find((item) => item.SKU === newData.SKU);
+
+  if (existingItem) {
+    const existingSizes = existingItem.sizes || [];
+    const sizesToRemove = newData.sizes || [];
+
+    // Filtrar las tallas que se deben eliminar
+    const updatedSizes = existingSizes.filter(size => !sizesToRemove.includes(size));
+
+    if (updatedSizes.length === existingSizes.length) {
+      console.log(`No se eliminaron tallas para SKU ${newData.SKU}, ya que no coincidían.`);
+    } else {
+      console.log(`Tallas ${sizesToRemove.join(', ')} eliminadas del SKU ${newData.SKU}.`);
+    }
+
+    existingItem.sizes = updatedSizes;
+  } else {
+    console.log(`El SKU ${newData.SKU} no existe en el stock.`);
+  }
+
+  // Escribir los datos actualizados de vuelta al archivo CSV
+  const writeStream = fs.createWriteStream(stockPath);
+  const csvStream = format({ headers: true });
+
+  csvStream.pipe(writeStream);
+  data.forEach((item) => {
+    csvStream.write({ ...item, sizes: item.sizes.join('|') });
+  });
+
+  csvStream.end();
 }
