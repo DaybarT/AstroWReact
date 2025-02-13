@@ -6,56 +6,79 @@ import Searcher from "../components/Searcher";
 import "../styles/global.astro";
 import fs from "fs";
 import path from "path";
-import scrapper from "../functions/scrapper";
+import csvParser from "csv-parser";
 
 // Ruta del archivo JSON local
-const filePath = path.resolve("./data/stock.json");
+const filePath = path.resolve("./data/stock.csv");
 
-// Leer el archivo JSON de manera síncrona
-let productData = [];
-try {
-	const rawData = fs.readFileSync(filePath, "utf-8");
-	productData = JSON.parse(rawData);
-} catch (error) {
-	console.error("Error leyendo el archivo JSON:", error);
-}
+// Definir el tipo de `productData` como un array de objetos con las claves correspondientes
+
+// Función para leer el CSV de forma asíncrona
+const readCSV = async () => {
+  return new Promise((resolve, reject) => {
+    const data = [];
+    fs.createReadStream(filePath)
+      .pipe(csvParser())  // Lee el CSV con las cabeceras
+      .on("data", (row) => {
+        data.push(row);  // Agrega cada fila (objeto) al array 'data'
+      })
+      .on("end", () => {
+        resolve(data);  // Resuelve la promesa con los datos leídos
+      })
+      .on("error", (err) => {
+        reject("Error al leer el archivo CSV: " + err);
+      });
+  });
+};
+
+// Leer los datos antes de renderizar la página
+const productData = await readCSV();  // Se usa productData aquí directamente
 
 // Pasar los datos al componente Card
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>DaybarT-Shop</title>
-		<script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
-	</head>
-	<body>
-		<div class="container">
-			<div class="div-login">
-				<NeonCheckbox client:load />
-				<!-- <Searcher/> -->
-				<button on:click={() => {
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>DaybarT-Shop</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="div-login">
+        <NeonCheckbox client:load />
+        <!-- <Searcher/> -->
+        <!-- <button on:click={() => {
 					
 					scrapper('IF6490');
-				}}>Buscar</button>
-
-				
-			</div>
-			<br />
-			<div class="div-father">
-				{
-					productData.length === 0 ? (
-						<div style="padding-top: 150px; font-size: 100px; background-color:#090b11;">NO STOCK</div>
-					) : (
-						productData.map((product, index) => (
-							<Card key={index} {...product} />
-						))
-					)
-				}
-			</div>
-		</div>
-	</body>
+				}}>Buscar</button> -->
+      </div>
+      <br />
+      <div class="div-father">
+        {
+          productData.length === 0 ? (
+            <div style="padding-top: 150px; font-size: 100px; background-color:#090b11;">
+              NO STOCK
+            </div>
+          ) : (
+            productData.map((product, index) => (
+              <Card
+                key={index}
+                sku={product.SKU}
+                title={product.Title}
+                img={product.img}
+                sizes={product.sizes}
+                price={product.price}
+				client:load
+              />
+            ))
+          )
+        }
+      </div>
+    </div>
+  </body>
 </html>

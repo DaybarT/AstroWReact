@@ -21,7 +21,6 @@ export async function addData(newData) {
     const writeStream = fs.createWriteStream(dbPath);
     format([header], { headers: false }).pipe(writeStream);
     console.log("Archivo creado con cabeceras.");
-    return;
   }
 
   // Leer el archivo CSV y convertirlo en un array de objetos
@@ -171,7 +170,7 @@ export async function addStock(newData) {
   let headers = [];
   
   if (!fs.existsSync(stockPath)) {
-    const header = ['SKU', 'Title', 'img', 'sizes'];
+    const header = ['SKU', 'Title', 'img', 'sizes','price'];
     fs.writeFileSync(stockPath, `${header.join(',')}\n`);
     console.log("Archivo creado con cabeceras.");
     return;
@@ -213,7 +212,8 @@ export async function addStock(newData) {
       SKU: newData.SKU,
       Title: newData.Title,
       img: newData.img,
-      sizes: newData.sizes.sort((a, b) => a - b)
+      sizes: newData.sizes.sort((a, b) => a - b),
+      price: newData.price
     });
     console.log(`Nuevo SKU agregado: ${newData.SKU}`);
   }
@@ -229,12 +229,12 @@ export async function addStock(newData) {
   csvStream.end();
 }
 
-/* addStock({
-  SKU: "HQ3073-101",
-  Title: "Nike Air Max",
-  img: "https://example.com/image.jpg",
-  sizes: [44]
-}); */
+//  addStock({
+//   SKU: "HQ3073-103",
+//   Title: "Nike Air Max",
+//   img: "https://example.com/image.jpg",
+//   sizes: [44,45,41,42]
+// }); 
 
 export async function removeStock(SKU) {
   if (!fs.existsSync(stockPath)) {
@@ -286,7 +286,7 @@ export async function removeStock(SKU) {
 
   csvStream.end();
 }
-/* removeStock("HQ3073-101"); */
+// removeStock("HQ3073-100"); 
 
 export async function removeStockSize(newData) {
   const results = [];
@@ -351,3 +351,14 @@ export async function removeStockSize(newData) {
 
   csvStream.end();
 }
+
+// removeStockSize({
+//   SKU: 'HQ3073-103',
+//   sizes: [45] 
+// })
+//   .then(() => {
+//     console.log('Proceso completado con éxito.');
+//   })
+//   .catch((error) => {
+//     console.error('Error al procesar el archivo:', error);
+//   });
