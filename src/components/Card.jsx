@@ -1,6 +1,9 @@
-import { removeStockSize } from "../functions/files";
+import React, { useState } from 'react';
 
-export default function Card({ sku, title, img, sizes, price }) {
+export default function Card({apiUrl ,sku, title, img, sizes, price }) {
+
+  const [productSizes, setProductSizes] = useState(sizes.split("|")); // Estado local para manejar las tallas
+
   const divStyle = {
     width: "200px",
     borderRadius: "5px",
@@ -25,13 +28,26 @@ export default function Card({ sku, title, img, sizes, price }) {
     padding: "0", // Eliminar padding adicional
   };
 
-  const handleRemoveSize = async (sku, size) => {
+  const removeSize = async (sku, size) => {
     try {
-      console.log("Intentando eliminar talla:", size);
-      await removeStockSize({ SKU: sku, sizes: [size] });
-      console.log("Talla eliminada:", size);
+      const response = await fetch(apiUrl+"/api/removeStockSize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          SKU: sku,
+          sizes: [Number(size)], 
+        }),
+      });
+  
+      const result = await response.json();
+      if (result.success){
+        setProductSizes((prevSizes) => prevSizes.filter((item) => item !== size));
+        console.log(`Talla ${size} eliminada del SKU ${sku}:`, result);
+      }
+      
     } catch (error) {
-      console.error("Error al eliminar talla", error);
+      // console.error("Error al eliminar talla:", error);
+      console.log(error);
     }
   };
 
@@ -44,18 +60,20 @@ export default function Card({ sku, title, img, sizes, price }) {
       <p style={textStyle} className="card_title">
         {title ? title : "Title Not Found"}
       </p>
-      <p style={textStyle} className="card_size">
-        {sizes
-          ? sizes.split("|").map((size, index) => (
-              <button
-                key={index}
-                onClick={() => handleRemoveSize({"SKU": sku, "sizes":[size]})} // Llamada a la función al hacer clic
-              >
+
+      {productSizes
+        ? productSizes.map((size, index) => (
+            <button
+              key={index}
+              onClick={() => removeSize(sku, size)}
+            >
+              <p style={textStyle} className="card_size">
                 {size} EU
-              </button>
-            ))
-          : "Size Not Found"}
-      </p>
+              </p>
+            </button>
+          ))
+        : "Size Not Found"}
+
       <p style={textStyle} className="card_price">
         {price ? price + " €" : "Price Not Found"}
       </p>
