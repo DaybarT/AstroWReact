@@ -7,9 +7,34 @@ import { format } from 'fast-csv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbPath = import.meta.env.dbShoes;
-const stockPath = import.meta.env.stock;
+/* const dbPath = import.meta.env.dbShoes;
+const stockPath = import.meta.env.stock; */
 
+
+import bcrypt from 'bcryptjs';
+
+// Para encriptar la contraseña
+const saltRounds = 10;
+const password = '';
+bcrypt.hash(password, saltRounds, (err, hash) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  console.log('Contraseña encriptada:', hash);
+
+  // Para verificar la contraseña
+  bcrypt.compare(password, hash, (err, result) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log('Las contraseñas coinciden:', result);
+  });
+});
+
+/* Contraseña encriptada: $2a$10$jP7efqByDqIQgyJdgXS0QuOlB/3r2771lTL7K7z5flA2sg06bT8Tm
+Las contraseñas coinciden: true */
 
 
 // Ejemplo de uso:
