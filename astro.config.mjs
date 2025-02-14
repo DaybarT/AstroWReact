@@ -7,9 +7,4 @@ export default defineConfig({
   integrations: [react()],
   output: 'server',
   adapter: vercel(),
-  resolve: {
-    alias: {
-      crypto: 'crypto-browserify',  // Polyfill para `crypto` en el navegador
-    },
-  },
 });

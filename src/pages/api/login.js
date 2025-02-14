@@ -1,11 +1,9 @@
 export const prerender = false;
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
-import { format } from "fast-csv";
-import crypto from 'crypto';
 const userPath = import.meta.env.auth;
+import bcrypt from "bcryptjs";
 
 export async function POST({ request }) {
   const filePath = path.resolve(userPath);
@@ -22,52 +20,94 @@ export async function POST({ request }) {
           const { user, password } = await request.json();
 
           if (!user || !password) {
-            return resolve(new Response(JSON.stringify({ error: "Faltan datos" }), { status: 400 }));
+            return resolve(
+              new Response(JSON.stringify({ error: "Faltan datos" }), {
+                status: 400,
+              })
+            );
           }
 
-          const foundUser = users.find(u => 
-            u.user === user && u.password === crypto.createHash('sha256').update(password).digest('hex')
+          const foundUser = users.find(
+            (u) =>
+              (u.user || "").trim().toLowerCase() ===
+              user.trim().toLowerCase()
           );
 
-          if (foundUser) {
-            resolve(new Response(JSON.stringify({ success: true, message: "Login exitoso" }), { status: 200 }));
-          } else {
-            resolve(new Response(JSON.stringify({ success: false, message: "Usuario o contraseña incorrectos" }), { status: 401 }));
+          if (!foundUser) {
+            return resolve(
+              new Response(JSON.stringify({ error: "user no encontrado" }), {
+                status: 404,
+              })
+            );
           }
+
+          bcrypt.compare(password, foundUser.password, (err, result) => {
+            if (err) {
+              console.error("Error al verificar la contraseña:", err);
+              return reject(
+                new Response(JSON.stringify({ error: "Error interno" }), {
+                  status: 500,
+                })
+              );
+            }
+
+            if (result) {
+              console.log("Autenticación exitosa");
+              resolve(
+                new Response(
+                  JSON.stringify({ success: "Inicio de sesión exitoso" }),
+                  { status: 200 }
+                )
+              );
+            } else {
+              console.log("Contraseña incorrecta");
+              resolve(
+                new Response(
+                  JSON.stringify({ error: "Contraseña incorrecta" }),
+                  { status: 401 }
+                )
+              );
+            }
+          });
         } catch (err) {
-          resolve(new Response(JSON.stringify({ error: err.message }), { status: 500 }));
+          console.error("Error en el servidor:", err);
+          resolve(
+            new Response(JSON.stringify({ error: err.message }), {
+              status: 500,
+            })
+          );
         }
       })
       .on("error", (err) => {
-        reject(new Response(JSON.stringify({ error: err.message }), { status: 500 }));
+        console.error("Error leyendo el archivo:", err);
+        reject(
+          new Response(JSON.stringify({ error: err.message }), { status: 500 })
+        );
       });
   });
 }
 
+// export default async function login() {
+//   const filePath = path.resolve("../../../data/user.csv");
 
+//   const data = [];
 
-/* export default async function login() {
-  const filePath = path.resolve("../../../data/user.csv");
+//   return new Promise((resolve, reject) => {
+//     fs.createReadStream(filePath)
+//       .pipe(csvParser())
+//       .on("data", (row) => {
+//         data.push(row);
+//       })
+//       .on("end", () => {
+//         resolve(new Response(JSON.stringify(data), { status: 200 }));
+//       })
+//       .on("error", (err) => {
+//         reject(new Response(JSON.stringify({ error: err.message }), { status: 500 }));
+//       });
+//   });
+// }
 
-  const data = [];
-
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(filePath)
-      .pipe(csvParser())
-      .on("data", (row) => {
-        data.push(row);
-      })
-      .on("end", () => {
-        resolve(new Response(JSON.stringify(data), { status: 200 }));
-      })
-      .on("error", (err) => {
-        reject(new Response(JSON.stringify({ error: err.message }), { status: 500 }));
-      });
-  });
-}
-
-login().then(response => response.text().then(console.log)).catch(console.error);
- */
+// login().then(response => response.text().then(console.log)).catch(console.error);
 
 /* function hashSHA256(data) {
     return crypto.createHash('sha256').update(data).digest('hex');

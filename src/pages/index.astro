@@ -6,7 +6,7 @@ import "../styles/global.astro";
 const ENV = import.meta.env;
 
 // Obtiene los datos de la API en el servidor antes de renderizar la página
-const response = await fetch(ENV.SERVER+ENV.getStock);
+const response = await fetch(ENV.SERVER + ENV.getStock);
 const productData = await response.json();
 
 // Pasar los datos al componente Card
@@ -19,41 +19,21 @@ const productData = await response.json();
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>DaybarT-Shop</title>
-    ></script>
   </head>
-  <body>
-    <div class="container">
-      <div class="div-login">
-        <NeonCheckbox ENV={ENV} client:load />
-        <!-- <Searcher/> -->
-        <!-- <button on:click={() => {
+</html>
+<body>
+  <div class="container">
+    <div class="div-login">
+      <NeonCheckbox ENV={ENV} client:load />
+      <!-- <Searcher/> -->
+      <!-- <button on:click={() => {
 					
 					scrapper('IF6490');
 				}}>Buscar</button> -->
-      </div>
-      <br />
-      <div class="div-father">
-        {
-          productData.length === 0 ? (
-            <div style="padding-top: 150px; font-size: 100px; background-color:#090b11;">
-              NO STOCK
-            </div>
-          ) : (
-            productData.map((product, index) => (
-              <Card
-                key={index}
-                ENV={ENV}
-                sku={product.SKU}
-                title={product.Title}
-                img={product.img}
-                sizes={product.sizes}
-                price={product.price}
-				client:load
-              />
-            ))
-          )
-        }
-      </div>
     </div>
-  </body>
-</html>
+    <br />
+    <div class="div-father">
+      <Card client:load productData={productData} ENV={ENV} />
+    </div>
+  </div>
+</body>

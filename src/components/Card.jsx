@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-export default function Card({ENV ,sku, title, img, sizes, price }) {
-
-  const [productSizes, setProductSizes] = useState(sizes.split("|")); // Estado local para manejar las tallas
-
+export default function Card({ ENV, productData }) {
   const divStyle = {
     width: "200px",
     borderRadius: "5px",
@@ -28,57 +25,85 @@ export default function Card({ENV ,sku, title, img, sizes, price }) {
     padding: "0", // Eliminar padding adicional
   };
 
-  const removeSize = async (sku, size) => {
-    try {
-      const response = await fetch(ENV.SERVER+ENV.removeStockSize, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          SKU: sku,
-          sizes: [Number(size)], 
-        }),
-      });
-  
-      const result = await response.json();
-      if (result.success){
-        setProductSizes((prevSizes) => prevSizes.filter((item) => item !== size));
-        console.log(`Talla ${size} eliminada del SKU ${sku}:`, result);
-      }
-      
-    } catch (error) {
-      // console.error("Error al eliminar talla:", error);
-      console.log(error);
-    }
-  };
+  // const removeSize = async (sku, size) => {
+  //   try {
+  //     const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         SKU: sku,
+  //         sizes: [Number(size)],
+  //       }),
+  //     });
+
+  //     const result = await response.json();
+  //     if (result.success) {
+  //       setProductSizes((prevSizes) =>
+  //         prevSizes.filter((item) => item !== size)
+  //       );
+  //       console.log(`Talla ${size} eliminada del SKU ${sku}:`, result);
+  //     }
+  //   } catch (error) {
+  //     // console.error("Error al eliminar talla:", error);
+  //     console.log(error);
+  //   }
+  // };
 
   return (
-    <div style={divStyle}>
-      <img src={img} style={card_img} alt={img ? img : title} />
-      <p style={textStyle} className="card_sku">
-        {sku ? sku : "SKU Not Found"}
-      </p>
-      <p style={textStyle} className="card_title">
-        {title ? title : "Title Not Found"}
-      </p>
+    <>
+      {productData.map((product, index) => (
+        <div key={index} style={divStyle}>
+          <img
+            src={product.img}
+            style={card_img}
+            alt={product.img ? product.title : "Image Not Found"}
+          />
+          <p style={textStyle} className="card_sku">
+            {product.SKU ? product.SKU : "SKU Not Found"}
+          </p>
+          <p style={textStyle} className="card_title">
+            {product.title ? product.title : "Title Not Found"}
+          </p>
 
-      {productSizes
-        ? productSizes.map((size, index) => (
-            /* <button
-              key={index}
-               onClick={() => removeSize(sku, size)}
-            > */
-              <p style={textStyle} className="card_size">
+          <p style={textStyle} className="card_size">
+            {product.sizes
+              ? product.sizes
+                  .split("|")
+                  .map((size) => `${size}`)
+                  .join(", ")
+              : "Size Not Found"}
+          </p>
+          <p style={textStyle} className="card_price">
+            {product.price ? product.price + " €" : "Price Not Found"}
+          </p>
+        </div>
+      ))}
+    </>
+  );
+}
+
+// {productSizes
+//   ? productSizes.map((size, index) => (
+//       /* <button
+//         key={index}
+//          onClick={() => removeSize(sku, size)}
+//       > */
+//         <p style={textStyle} className="card_size">
+//           {size} EU
+//         </p>
+
+//       /* </button> */
+
+//     ))
+//   : "Size Not Found"}
+{
+  /* {product.sizes ? (
+            product.sizes.split("|").map((size, idx) => (
+              <p key={idx} style={textStyle} className="card_size">
                 {size} EU
               </p>
-
-            /* </button> */
-
-          ))
-        : "Size Not Found"}
-
-      <p style={textStyle} className="card_price">
-        {price ? price + " €" : "Price Not Found"}
-      </p>
-    </div>
-  );
+            ))
+          ) : (
+            <p style={textStyle}>Size Not Found</p>
+          )} */
 }

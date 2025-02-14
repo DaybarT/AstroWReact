@@ -24,4 +24,6 @@ pnpm-debug.log*
 .idea/
 
 #archivos
-data/*
+data/stock.csv
+data/dbShoes.csv
+data/user.csv
