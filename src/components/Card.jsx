@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function Card({apiUrl ,sku, title, img, sizes, price }) {
+export default function Card({ENV ,sku, title, img, sizes, price }) {
 
   const [productSizes, setProductSizes] = useState(sizes.split("|")); // Estado local para manejar las tallas
 
@@ -30,7 +30,7 @@ export default function Card({apiUrl ,sku, title, img, sizes, price }) {
 
   const removeSize = async (sku, size) => {
     try {
-      const response = await fetch(apiUrl+"/api/removeStockSize", {
+      const response = await fetch(ENV.SERVER+ENV.removeStockSize, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,14 +63,16 @@ export default function Card({apiUrl ,sku, title, img, sizes, price }) {
 
       {productSizes
         ? productSizes.map((size, index) => (
-            <button
+            /* <button
               key={index}
-              onClick={() => removeSize(sku, size)}
-            >
+               onClick={() => removeSize(sku, size)}
+            > */
               <p style={textStyle} className="card_size">
                 {size} EU
               </p>
-            </button>
+
+            /* </button> */
+
           ))
         : "Size Not Found"}
 

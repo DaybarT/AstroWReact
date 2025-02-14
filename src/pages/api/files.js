@@ -6,8 +6,9 @@ import { format } from 'fast-csv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, "../../data/dbShoes.csv");
-const stockPath = path.join(__dirname, "../../data/stock.csv");
+
+const dbPath = import.meta.env.dbShoes;
+const stockPath = import.meta.env.stock;
 
 
 

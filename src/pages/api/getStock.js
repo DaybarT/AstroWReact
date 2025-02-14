@@ -1,20 +1,21 @@
 // src/pages/api/getStock.js
-
+export const prerender = false;
 import fs from 'fs';
 import path from 'path';
 import csvParser from 'csv-parser';
 
-export async function GET() {
-  const filePath = path.resolve("./data/stock.csv");
+const stockPath = import.meta.env.stock;
 
-  if (!fs.existsSync(filePath)) {
+export async function GET() {
+
+  if (!fs.existsSync(stockPath)) {
     return new Response(JSON.stringify({ error: "Archivo de stock no encontrado" }), { status: 404 });
   }
 
   const data = [];
 
   return new Promise((resolve, reject) => {
-    fs.createReadStream(filePath)
+    fs.createReadStream(stockPath)
       .pipe(csvParser())
       .on("data", (row) => {
         data.push(row);

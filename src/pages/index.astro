@@ -3,10 +3,10 @@ import Card from "../components/Card";
 import NeonCheckbox from "../components/NeonCheckbox";
 import Searcher from "../components/Searcher";
 import "../styles/global.astro";
-const apiUrl = import.meta.env.SERVER;
+const ENV = import.meta.env;
 
 // Obtiene los datos de la API en el servidor antes de renderizar la página
-const response = await fetch(apiUrl+"/api/getStock");
+const response = await fetch(ENV.SERVER+ENV.getStock);
 const productData = await response.json();
 
 // Pasar los datos al componente Card
@@ -24,7 +24,7 @@ const productData = await response.json();
   <body>
     <div class="container">
       <div class="div-login">
-        <NeonCheckbox client:load />
+        <NeonCheckbox ENV={ENV} client:load />
         <!-- <Searcher/> -->
         <!-- <button on:click={() => {
 					
@@ -42,7 +42,7 @@ const productData = await response.json();
             productData.map((product, index) => (
               <Card
                 key={index}
-                apiUrl={apiUrl}
+                ENV={ENV}
                 sku={product.SKU}
                 title={product.Title}
                 img={product.img}

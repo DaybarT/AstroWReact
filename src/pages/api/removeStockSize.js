@@ -6,9 +6,8 @@ import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
 import { format } from "fast-csv";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const stockPath = path.join(__dirname, "../../../data/stock.csv");
+const dbPath = import.meta.env.dbShoes;
+const stockPath = import.meta.env.stock;
 
 export async function POST({ request }) {
   try {

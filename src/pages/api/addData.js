@@ -1,12 +1,11 @@
+export const prerender = false;
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
 import { format } from "fast-csv";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dbPath = path.join(__dirname, "../../data/dbShoes.csv");
+const dbPath = import.meta.env.dbShoes;
 
 // Función para agregar datos al archivo CSV
 

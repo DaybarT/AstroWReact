@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Input from './input';
+import Login from './Login';
 
-const NeonCheckbox = () => {
+export default function NeonCheckbox({ENV}) {
     const [data, setData] = useState(false);
     // console.log("HOLA");
     // Función para cambiar el estado
@@ -89,10 +89,8 @@ const NeonCheckbox = () => {
                 </label>
             )}
 
-            {/* Muestra el componente Input solo cuando 'data' es true */}
-            {data && <Input />}
+            {/* Muestra el componente Login solo cuando 'data' es true */}
+            {data && <Login ENV={ENV} />}
         </div>
     );
 };
-
-export default NeonCheckbox;
