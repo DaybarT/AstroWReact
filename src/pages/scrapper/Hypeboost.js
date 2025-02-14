@@ -68,4 +68,12 @@ export default async function hypeboost_cheerio(sku) {
     return productData;
   }
 }
-hypeboost_cheerio("HQ3073-100");
+/* hypeboost_cheerio("HQ3073-100"); */
+
+/* Cheerio es infinitamente mas rapido que Puppeter, 
+solo es usable para paginas web que no necesiten javascript para cargarse las tallas y los precios
+
+Puppeter es util para cargar una web en la cual es neceserio que cargue el javascript para recuperar datos,
+por ejemplo, Stockx. (no esta probado) */
+
+
