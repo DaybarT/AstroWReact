@@ -1,7 +1,6 @@
 ---
 import Card from "../components/Card";
-import NeonCheckbox from "../components/NeonCheckbox";
-import Searcher from "../components/Searcher";
+import App from "./App";
 import "../styles/global.astro";
 const ENV = import.meta.env;
 
@@ -22,18 +21,5 @@ const productData = await response.json();
   </head>
 </html>
 <body>
-  <div class="container">
-    <div class="div-login">
-      <NeonCheckbox ENV={ENV} client:load />
-      <!-- <Searcher/> -->
-      <!-- <button on:click={() => {
-					
-					scrapper('IF6490');
-				}}>Buscar</button> -->
-    </div>
-    <br />
-    <div class="div-father">
-      <Card client:load productData={productData} ENV={ENV} />
-    </div>
-  </div>
+  <App ENV={ENV} productData={productData} client:load/>
 </body>

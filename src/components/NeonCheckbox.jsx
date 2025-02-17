@@ -90,7 +90,7 @@ export default function NeonCheckbox({ENV}) {
             )}
 
             {/* Muestra el componente Login solo cuando 'data' es true */}
-            {data && <Login ENV={ENV} />}
+            {data && <Login ENV={ENV} setData={setData} />}
         </div>
     );
 };

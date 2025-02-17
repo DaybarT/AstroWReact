@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import Navbar from './Navbar';
 
-export default function Login({ENV}) {
+export default function Login({ENV,setData}) {
 
     const [session, setSession] = useState(false);
     const [user, setUser] = useState('');  
@@ -87,9 +88,9 @@ export default function Login({ENV}) {
         transition: 'all .3s ease-in-out',
     };
     return (
-        <>
+        <div>
           {session ? (
-            <button>Botón adicional</button> // Se muestra si session es false
+            <Navbar setSession={setSession} setData={setData}/>
           ) : (
             <div style={cardStyle}>
               <h4 style={titleStyle}>Log In</h4>
@@ -120,6 +121,6 @@ export default function Login({ENV}) {
               </form>
             </div>
           )}
-        </>
+        </div>
       );      
 }
