@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+
 export default function Searcher() {
 
     const searcherStyle = {
@@ -5,34 +7,46 @@ export default function Searcher() {
         background: "none",
         border: "none",
         outline: "none",
-        maxWidth: "190px",
         padding: "10px 20px",
         fontSize: "16px",
-        // borderRadius: "9999px",
         boxShadow: "inset 2px 5px 10px rgb(5, 5, 5)",
-        color: "#fff"
+        color: "#fff",
+        borderRadius: "5px", 
+    };
+
+    const containerStyle = {
+        display: "flex",        
+        justifyContent: "space-between",  
+        width: "100%",           
     };
 
     return (
-        <>
+        <div style={containerStyle}>
             <input
                 placeholder="SKU"
                 name="text"
                 type="text"
-                style={searcherStyle}
+                style={{ ...searcherStyle, width: "30%" }} 
             />
             <input
                 placeholder="Talla"
                 name="text"
                 type="text"
-                style={searcherStyle}
+                style={{ ...searcherStyle, width: "30%" }} 
             />
             <input
                 placeholder="Precio"
                 name="text"
                 type="text"
-                style={searcherStyle}
+                style={{ ...searcherStyle, width: "30%" }} 
             />
-        </>
+            <input
+                placeholder="Precio"
+                name="text"
+                type="submit"
+                value="Add"
+                style={{ ...searcherStyle, width: "30%" }} 
+            />
+        </div>
     );
 }

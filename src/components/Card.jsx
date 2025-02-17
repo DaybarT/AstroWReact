@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
-export default function Card({ ENV, productData }) {
+export default function Card({ ENV, productData, edit, del, setProductData }) {
+  console.log(productData);
   const divStyle = {
     width: "200px",
     borderRadius: "5px",
@@ -25,29 +26,46 @@ export default function Card({ ENV, productData }) {
     padding: "0", // Eliminar padding adicional
   };
 
-  // const removeSize = async (sku, size) => {
-  //   try {
-  //     const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         SKU: sku,
-  //         sizes: [Number(size)],
-  //       }),
-  //     });
+  const removeSize = async (sku, size) => {
+    try {
+      console.log(sku);
+      console.log(size);
+      const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          SKU: sku,
+          sizes: [Number(size)],
+        }),
+      });
 
-  //     const result = await response.json();
-  //     if (result.success) {
-  //       setProductSizes((prevSizes) =>
-  //         prevSizes.filter((item) => item !== size)
-  //       );
-  //       console.log(`Talla ${size} eliminada del SKU ${sku}:`, result);
-  //     }
-  //   } catch (error) {
-  //     // console.error("Error al eliminar talla:", error);
-  //     console.log(error);
-  //   }
-  // };
+      const result = await response.json();
+      console.log(result);
+      if (result.success) {
+        
+        // //AQUI HAY QUE BUSCAR POR EL SKU EN productData Y ELIMINAR LA TALLA Y ACTUALIZAR productData CON setProductData
+        // let producto = productData.find((p) => p.SKU === sku);
+
+        // // Dividir las tallas en un array
+        // const arrayTallas = producto.sizes.split("|");
+
+        // // Filtrar para eliminar la talla
+        // const tallasActualizadas = arrayTallas.filter(
+        //   (talla) => talla !== Number(size)
+        // );
+
+        // // Actualizar el campo 'sizes' y el estado de productData
+        // producto.sizes = tallasActualizadas.join("|"); // Volver a unir el array en un string
+
+        // // Actualizar el estado de productData con la nueva información
+        // setProductData([...productData]); // Usar setProductData para actualizar el estado
+        // console.log(productData);
+      }
+    } catch (error) {
+      // console.error("Error al eliminar talla:", error);
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -65,14 +83,41 @@ export default function Card({ ENV, productData }) {
             {product.title ? product.title : "Title Not Found"}
           </p>
 
-          <p style={textStyle} className="card_size">
+          {/* <p style={textStyle} className="card_size">
             {product.sizes
               ? product.sizes
                   .split("|")
                   .map((size) => `${size}`)
                   .join(", ")
               : "Size Not Found"}
-          </p>
+          </p> */}
+
+          {del ? (
+            product.sizes ? (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {product.sizes.split("|").map((size, index) => (
+                  <button
+                    key={index}
+                    onClick={() => removeSize(product.SKU, size)} // Acción al hacer clic
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p>Size Not Found</p>
+            )
+          ) : (
+            <p style={textStyle} className="card_size">
+              {product.sizes
+                ? product.sizes
+                    .split("|")
+                    .map((size) => `${size}`)
+                    .join(", ")
+                : "Size Not Found"}
+            </p>
+          )}
+
           <p style={textStyle} className="card_price">
             {product.price ? product.price + " €" : "Price Not Found"}
           </p>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Login from './Login';
 
-export default function NeonCheckbox({ENV}) {
-    const [data, setData] = useState(false);
+export default function NeonCheckbox({ENV,setData,data}) {
+    
     // console.log("HOLA");
     // Función para cambiar el estado
     const tryLogin = () => {
@@ -88,9 +88,6 @@ export default function NeonCheckbox({ENV}) {
                     <span style={labelStyle}>LOG IN FOR EDIT LIST</span>
                 </label>
             )}
-
-            {/* Muestra el componente Login solo cuando 'data' es true */}
-            {data && <Login ENV={ENV} setData={setData} />}
         </div>
     );
 };
