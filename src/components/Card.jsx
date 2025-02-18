@@ -5,7 +5,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   const divStyle = {
     width: "200px",
     borderRadius: "5px",
-    backgroundColor: "rgba(244, 207, 144, 0.8)", // Manteniendo la opacidad
+    backgroundColor: "#090b11", // Manteniendo la opacidad
     color: "white",
     display: "flex",
     flexDirection: "column",
@@ -24,12 +24,19 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   const textStyle = {
     margin: "5px 0", // Añadir un pequeño espacio entre los textos
     padding: "0", // Eliminar padding adicional
+    color: "white"
   };
+
+  const buttonStyle = {
+    backgroundColor:"#101625",
+    borderRadius: "5px",
+    color: "white",
+    borderColor: "black",
+    cursor:"pointer"
+  }
 
    const removeSize = async (sku_d, size_d) => {
     try {
-      console.log(sku_d);
-      console.log(size_d);
       const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,7 +47,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
       });
 
       const result = await response.json();
-      console.log(result);
+
       if (result.success) {
         setProductData(prevData => 
           prevData.map(product => 
@@ -88,6 +95,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {product.sizes.split("|").map((size, index) => (
                   <button
+                  style={buttonStyle}
                     key={index}
                     onClick={() => removeSize(product.SKU, size)} // Acción al hacer clic
                   >

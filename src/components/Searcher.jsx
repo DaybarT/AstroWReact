@@ -40,13 +40,11 @@ export default function Searcher() {
                 type="text"
                 style={{ ...searcherStyle, width: "30%" }} 
             />
-            <input
-                placeholder="Precio"
-                name="text"
-                type="submit"
-                value="Add"
-                style={{ ...searcherStyle, width: "30%" }} 
-            />
+            <button style={{ ...searcherStyle, width: "30%", cursor:"pointer" }} > 
+                Add
+            </button>
+                
+            
         </div>
     );
 }
