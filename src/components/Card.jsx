@@ -26,46 +26,37 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
     padding: "0", // Eliminar padding adicional
   };
 
-  const removeSize = async (sku, size) => {
+   const removeSize = async (sku_d, size_d) => {
     try {
-      console.log(sku);
-      console.log(size);
+      console.log(sku_d);
+      console.log(size_d);
       const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          SKU: sku,
-          sizes: [Number(size)],
+          SKU: sku_d,
+          sizes: [Number(size_d)],
         }),
       });
 
       const result = await response.json();
       console.log(result);
       if (result.success) {
+        setProductData(prevData => 
+          prevData.map(product => 
+            product.SKU === sku_d 
+              ? { ...product, sizes: product.sizes.split('|').filter(size => size !== size_d).join('|') }
+              : product
+          )
+        );
         
-        // //AQUI HAY QUE BUSCAR POR EL SKU EN productData Y ELIMINAR LA TALLA Y ACTUALIZAR productData CON setProductData
-        // let producto = productData.find((p) => p.SKU === sku);
-
-        // // Dividir las tallas en un array
-        // const arrayTallas = producto.sizes.split("|");
-
-        // // Filtrar para eliminar la talla
-        // const tallasActualizadas = arrayTallas.filter(
-        //   (talla) => talla !== Number(size)
-        // );
-
-        // // Actualizar el campo 'sizes' y el estado de productData
-        // producto.sizes = tallasActualizadas.join("|"); // Volver a unir el array en un string
-
-        // // Actualizar el estado de productData con la nueva información
-        // setProductData([...productData]); // Usar setProductData para actualizar el estado
-        // console.log(productData);
       }
     } catch (error) {
       // console.error("Error al eliminar talla:", error);
       console.log(error);
     }
-  };
+  }; 
+
 
   return (
     <>
