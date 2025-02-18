@@ -26,4 +26,10 @@ pnpm-debug.log*
 #archivos
 data/stock.csv
 data/dbShoes.csv
+
+#solo subirlo de cara a produccion, despues de subirlo a produccion, lo borras de github
 data/user.csv
+
+
+#evitamos subir el algoritmo de hasheo
+src/pages/api/files.js
