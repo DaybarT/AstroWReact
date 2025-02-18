@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Card({ ENV, productData, edit, del, setProductData }) {
-  console.log(productData);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Verificamos si estamos en el cliente antes de acceder a window.innerWidth
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile(); // Ejecutar una vez al montar
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const divStyle = {
-    width: "200px",
+    width: isMobile ? "150px" : "200px", // Más pequeña en móviles
     borderRadius: "5px",
     backgroundColor: "#090b11", // Manteniendo la opacidad
     color: "white",
@@ -16,7 +26,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   };
 
   const card_img = {
-    width: "200px",
+    width: isMobile ? "120px" : "200px", // Imagen más pequeña en móviles
     borderRadius: "10px",
     margin: "0", // Eliminar espacio adicional alrededor de la imagen
   };
@@ -24,18 +34,18 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   const textStyle = {
     margin: "5px 0", // Añadir un pequeño espacio entre los textos
     padding: "0", // Eliminar padding adicional
-    color: "white"
+    color: "white",
   };
 
   const buttonStyle = {
-    backgroundColor:"#101625",
+    backgroundColor: "#101625",
     borderRadius: "5px",
     color: "white",
     borderColor: "black",
-    cursor:"pointer"
-  }
+    cursor: "pointer",
+  };
 
-   const removeSize = async (sku_d, size_d) => {
+  const removeSize = async (sku_d, size_d) => {
     try {
       const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
         method: "POST",
@@ -49,21 +59,25 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
       const result = await response.json();
 
       if (result.success) {
-        setProductData(prevData => 
-          prevData.map(product => 
-            product.SKU === sku_d 
-              ? { ...product, sizes: product.sizes.split('|').filter(size => size !== size_d).join('|') }
+        setProductData((prevData) =>
+          prevData.map((product) =>
+            product.SKU === sku_d
+              ? {
+                  ...product,
+                  sizes: product.sizes
+                    .split("|")
+                    .filter((size) => size !== size_d)
+                    .join("|"),
+                }
               : product
           )
         );
-        
       }
     } catch (error) {
       // console.error("Error al eliminar talla:", error);
       console.log(error);
     }
-  }; 
-
+  };
 
   return (
     <>
@@ -74,10 +88,10 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
             style={card_img}
             alt={product.img ? product.title : "Image Not Found"}
           />
-          <p style={textStyle} className="card_sku">
+          <p style={{ textStyle }}>
             {product.SKU ? product.SKU : "SKU Not Found"}
           </p>
-          <p style={textStyle} className="card_title">
+          <p style={textStyle}>
             {product.title ? product.title : "Title Not Found"}
           </p>
 
@@ -95,7 +109,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                 {product.sizes.split("|").map((size, index) => (
                   <button
-                  style={buttonStyle}
+                    style={buttonStyle}
                     key={index}
                     onClick={() => removeSize(product.SKU, size)} // Acción al hacer clic
                   >
@@ -107,7 +121,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
               <p>Size Not Found</p>
             )
           ) : (
-            <p style={textStyle} className="card_size">
+            <p style={textStyle}>
               {product.sizes
                 ? product.sizes
                     .split("|")
@@ -117,7 +131,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
             </p>
           )}
 
-          <p style={textStyle} className="card_price">
+          <p style={textStyle}>
             {product.price ? product.price + " €" : "Price Not Found"}
           </p>
         </div>

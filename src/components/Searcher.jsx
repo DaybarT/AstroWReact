@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export default function Searcher() {
 
     const searcherStyle = {
-        margin: "30px",
+        margin: "10px",
         background: "none",
         border: "none",
         outline: "none",
@@ -16,7 +16,7 @@ export default function Searcher() {
 
     const containerStyle = {
         display: "flex",        
-        justifyContent: "space-between",  
+        justifyContent: "center",  
         width: "100%",           
     };
 
@@ -26,22 +26,22 @@ export default function Searcher() {
                 placeholder="SKU"
                 name="text"
                 type="text"
-                style={{ ...searcherStyle, width: "30%" }} 
+                style={{ ...searcherStyle, width: "10%" }} 
             />
             <input
                 placeholder="Talla"
                 name="text"
                 type="text"
-                style={{ ...searcherStyle, width: "30%" }} 
+                style={{ ...searcherStyle, width: "10%" }} 
             />
             <input
                 placeholder="Precio"
                 name="text"
                 type="text"
-                style={{ ...searcherStyle, width: "30%" }} 
+                style={{ ...searcherStyle, width: "10%" }} 
             />
-            <button style={{ ...searcherStyle, width: "30%", cursor:"pointer" }} > 
-                Add
+            <button style={{ ...searcherStyle, cursor:"pointer" }} > 
+                OK
             </button>
                 
             
