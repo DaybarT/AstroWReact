@@ -47,7 +47,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
 
   const removeSize = async (sku_d, size_d) => {
     try {
-      const response = await fetch(ENV.SERVER + ENV.removeStockSize, {
+      const response = await fetch(ENV.BASE_URL + ENV.removeStockSize, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
