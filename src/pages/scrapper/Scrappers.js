@@ -131,7 +131,59 @@ class Laced {
 //   await laced.puppeteer("HV6674-067");
 // })();
 
+// (async () => {
+//   const hypeBoost = new HypeBoost();
+//   await hypeBoost.cheerio("HV6674-067");
+// })();
+
+//https://sneakers123.com/es/sneaker/?q=FZ1151%20100
+
+class Sneakers123 {
+  async puppeteer(sku) {
+    const browser = await puppeteer.launch();
+
+    // Abre una nueva página en el navegador
+    const page = await browser.newPage();
+
+    // Navega a la URL proporcionada
+    const url = "https://sneakers123.com/es/sneaker/?q=" + sku.trim();
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+
+
+    const allImgSrcs = await page.$$eval('[data-v-08f21fb8][data-v-4068e002] img', imgs => imgs.map(img => img.src));
+    const allText = await page.$$eval('[data-v-08f21fb8][data-v-4068e002] span', spans => spans.map(span => span.textContent.trim()));
+
+
+    // const allImgSrcs = await section.$$eval('img', imgs => imgs.map(img => img.src));
+    // console.log("Todas las imágenes:", allImgSrcs);
+
+
+    await browser.close();
+
+    console.log(allImgSrcs);
+    console.log(allText);
+
+  }
+  // async cheerio(sku) {
+  //   const url = "https://www.laced.com/search?query=%" + sku.trim();
+  //   const headers = {
+  //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+  //   };
+
+  //   const { data } = await axios.get(url, { headers });
+  //   const $ = cheerio.load(data);
+
+  //   const datos = $('article[aria-label=ProductCard]').html(); //esto es un div, que dentro estan los datos que intento recoger abajo
+
+  //   const contenido = cheerio.load(datos);
+
+  //   const imagen = contenido("img").attr("src");
+  //   console.log(imagen);
+  //   const model = contenido("img").attr("alt");
+  //   console.log(model);
+  // }
+}
 (async () => {
-  const hypeBoost = new HypeBoost();
+  const hypeBoost = new Sneakers123();
   await hypeBoost.puppeteer("HV6674-067");
 })();
