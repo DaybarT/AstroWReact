@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 
 export default function Card({ ENV, productData, edit, del, setProductData }) {
  
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Verificamos si estamos en el cliente antes de acceder a window.innerWidth
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile(); // Ejecutar una vez al montar
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+  
   const divStyle = {
     width: isMobile ? "150px" : "200px", // Más pequeña en móviles
     borderRadius: "5px",
