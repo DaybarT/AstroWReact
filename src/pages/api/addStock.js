@@ -1,4 +1,4 @@
-export const prerender = false;
+/* export const prerender = false;
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -71,3 +71,4 @@ export async function POST({ newData }) {
 
   csvStream.end();
 }
+ */

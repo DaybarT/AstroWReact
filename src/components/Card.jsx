@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export default function Card({ ENV, productData, edit, del, setProductData }) {
-  console.log(productData);
+ 
   const divStyle = {
     width: "200px",
     borderRadius: "5px",

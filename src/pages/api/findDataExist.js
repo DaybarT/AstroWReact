@@ -1,16 +1,14 @@
-export const prerender = false;
+/* export const prerender = false;
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import csvParser from 'csv-parser';
 import { format } from 'fast-csv';
 
-const dbPath = import.meta.env.dbShoes;
-const stockPath = import.meta.env.stock;
-
+const dbPath = path.resolve("../../../public/data/dbShoes.csv"); // Mejor usar `path.resolve` para la ruta
 
 // Función para buscar un SKU en el CSV
-export async function POST({ newData }) {
+export async function findDataExist(newData) {
   try {
     // Usamos una Promise para envolver la lectura del archivo CSV
     const fileData = await new Promise((resolve, reject) => {
@@ -54,7 +52,7 @@ export async function POST({ newData }) {
     }
 
     // Asegurarnos de hacer un trim() de los valores de SKU para evitar errores por espacios adicionales
-    const existingItem = fileData.find((item) => item.SKU && item.SKU.trim().toUpperCase() === sku.toUpperCase());
+    const existingItem = fileData.find((item) => item.SKU && item.SKU.trim().toUpperCase() === newData.toUpperCase());
 
     // Devolvemos el objeto si lo encontramos, o false si no
     return existingItem || false;
@@ -63,3 +61,11 @@ export async function POST({ newData }) {
     return null; // Si ocurre algún error, devolvemos null
   }
 }
+
+// Ejemplo de uso:
+const skuToSearch = "HQ3073-101"; // SKU que deseas buscar
+(async () => {
+  const result = await findDataExist(skuToSearch);
+  console.log(result);  // Imprime el objeto encontrado o null si no existe
+})();
+ */

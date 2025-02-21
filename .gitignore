@@ -24,6 +24,4 @@ pnpm-debug.log*
 .idea/
 
 #archivos
-data/stock.csv
-data/dbShoes.csv
-data/user.csv
+snkrs-451511-692af4c2ea53.json

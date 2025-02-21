@@ -1,22 +1,22 @@
-export const prerender = false;
+/* export const prerender = false;
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
 import { format } from "fast-csv";
 
-const dbPath = import.meta.env.dbShoes;
+const dbPath = "../../../public/data/dbShoes.csv"
 
 // Función para agregar datos al archivo CSV
 
-export async function POST({ newData }) {
+export async function addData( newData ) {
   const results = [];
   let headers = []; // Para almacenar los encabezados manualmente
 
   // Verificar si el archivo CSV existe
   if (!fs.existsSync(dbPath)) {
     // Si no existe, creamos un archivo vacío con las cabeceras
-    const header = ["SKU", "Title", "img"]; // Aquí añadimos las columnas
+    const header = ["SKU", "model", "img"]; // Aquí añadimos las columnas
     const writeStream = fs.createWriteStream(dbPath);
     format([header], { headers: false }).pipe(writeStream);
     console.log("Archivo creado con cabeceras.");
@@ -64,7 +64,7 @@ export async function POST({ newData }) {
   // Si el SKU no existe, añadir el nuevo producto
   results.push({
     SKU: newData.SKU,
-    Title: newData.Title,
+    model: newData.model,
     img: newData.img,
   });
 
@@ -79,7 +79,7 @@ export async function POST({ newData }) {
 
   // Escribir todas las filas (incluyendo la nueva si es necesario)
   results.forEach((item) => {
-    if (item.SKU && item.Title && item.img) {
+    if (item.SKU && item.model && item.img) {
       // Asegurarse de que los campos no estén vacíos
       csvStream.write(item);
     }
@@ -87,3 +87,12 @@ export async function POST({ newData }) {
 
   csvStream.end(); // Finalizamos la escritura
 }
+
+// Ejemplo de uso:
+ const newData = {
+  SKU: "HQ3073-101",
+  model: "Nike Air Max",
+  img: "https://example.com/image.jpg"
+};
+
+addData(newData);  */
