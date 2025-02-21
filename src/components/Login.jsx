@@ -8,7 +8,7 @@ export default function Login({ ENV, setSession,setData }) {
   const fetchLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(ENV.SERVER + ENV.login, {
+      const response = await fetch(ENV.BASE_URL + ENV.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

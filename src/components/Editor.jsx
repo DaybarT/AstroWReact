@@ -2,14 +2,14 @@ import React from "react";
 
 export default function Editor({ ENV, productData, setProductData }) {
   const card_img = {
-    width: "200px",
+    width: window.innerWidth <= 768 ? "100px" : "200px",
     borderRadius: "10px",
     margin: "0",
   };
 
   const tableStyle = {
     color: "white",
-    width: "100%",
+    width: window.innerWidth <= 768 ? "100%" : "80%",
     borderCollapse: "separate",
     borderSpacing: "5px",
     textAlign: "center",
@@ -25,6 +25,8 @@ export default function Editor({ ENV, productData, setProductData }) {
     color: "#fff",
     borderRadius: "5px",
     margin: "0",
+    width: "100%",
+    minWidth: "60px",
   };
 
   const handleChange = (index, field, value) => {
@@ -32,13 +34,17 @@ export default function Editor({ ENV, productData, setProductData }) {
     updatedProducts[index][field] = value;
     setProductData(updatedProducts);
   };
-  
+
+  const isMobile = {
+    display: window.innerWidth <= 768 ? "none" : "table-cell",
+  };
+
   return (
     <table style={tableStyle}>
       <thead>
         <tr>
-          <th>IMAGE</th>
-          <th>SKU</th>
+          <th style={isMobile}>IMAGE</th>
+          <th  style={isMobile}>SKU</th>
           <th>MODEL</th>
           <th>SIZES</th>
           <th>PRICE</th>
@@ -54,33 +60,42 @@ export default function Editor({ ENV, productData, setProductData }) {
                 alt={product.img ? product.title : "Image Not Found"}
               />
             </td>
-            <td>
+            <td
+              style={isMobile}
+            >
               <input
                 readOnly
                 disabled
                 value={product.SKU ? product.SKU : "SKU Not Found"}
-                style={{ ...inputStyle, width: "40%" }}
+                style={{ ...inputStyle, width: "40%", textAlign: "center" }}
               />
             </td>
-            <td>
+            <td style={isMobile}>
               <textarea
-              onChange={(e) => handleChange(index, "title", e.target.value)}
+                readOnly
+                disabled
+                // onChange={(e) => handleChange(index, "title", e.target.value)}
                 value={product.title ? product.title : "Title Not Found"}
-                style={{ ...inputStyle, width: "80%", height: "50px", resize: "none" }}
+                style={{
+                  ...inputStyle,
+                  width: "80%",
+                  height: "50px",
+                  resize: "none",
+                }}
               />
             </td>
             <td>
               <input
-              onChange={(e) => handleChange(index, "sizes", e.target.value)}
-                style={{ ...inputStyle, width: "30%" }}
+                onChange={(e) => handleChange(index, "sizes", e.target.value)}
+                style={{ ...inputStyle, width: "30%", textAlign: "center" }}
                 value={product.sizes ? product.sizes : "Sizes Not Found"}
               />
             </td>
             <td>
               <input
-              onChange={(e) => handleChange(index, "price", e.target.value)}
+                onChange={(e) => handleChange(index, "price", e.target.value)}
                 value={product.price ? product.price : "Price Not Found"}
-                style={{ ...inputStyle, width: "30%" }}
+                style={{ ...inputStyle, width: "30%", textAlign: "center" }}
               />
             </td>
           </tr>
