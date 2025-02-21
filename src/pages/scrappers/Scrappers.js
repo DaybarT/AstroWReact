@@ -40,7 +40,7 @@ class HypeBoost {
         img: imgSrc,
       };
 
-      /* console.log(productData);  */
+      console.log(productData); 
       return productData;
     }
   }
@@ -131,10 +131,10 @@ class Laced {
 //   await laced.puppeteer("HV6674-067");
 // })();
 
-// (async () => {
-//   const hypeBoost = new HypeBoost();
-//   await hypeBoost.cheerio("HV6674-067");
-// })();
+(async () => {
+  const hypeBoost = new HypeBoost();
+  await hypeBoost.cheerio("HV6674-067");
+})();
 
 //https://sneakers123.com/es/sneaker/?q=FZ1151%20100
 
@@ -183,7 +183,10 @@ class Sneakers123 {
   //   console.log(model);
   // }
 }
-(async () => {
-  const hypeBoost = new Sneakers123();
-  await hypeBoost.puppeteer("HV6674-067");
-})();
+// (async () => {
+//   const snkrs123 = new Sneakers123();
+//   await snkrs123.puppeteer("HV6674-067");
+// })();
+
+module.exports = { HypeBoost, Laced };
+

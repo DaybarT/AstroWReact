@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 export default function Card({ ENV, productData, edit, del, setProductData }) {
- 
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -12,7 +11,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
 
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-  
+
   const divStyle = {
     width: isMobile ? "150px" : "200px", // Más pequeña en móviles
     borderRadius: "5px",
@@ -38,12 +37,8 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
     color: "white",
   };
 
-  const buttonStyle = {
-    backgroundColor: "#101625",
-    borderRadius: "5px",
-    color: "white",
-    borderColor: "black",
-    cursor: "pointer",
+  const size_PriceStyle = {
+
   };
 
   const removeSize = async (sku_d, size_d) => {
@@ -93,7 +88,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
             {product.SKU ? product.SKU : "SKU Not Found"}
           </p>
           <p style={textStyle}>
-            {product.title ? product.title : "Title Not Found"}
+            {product.model ? product.model : "Model not found"}
           </p>
 
           {/* <p style={textStyle} className="card_size">
@@ -105,36 +100,23 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
               : "Size Not Found"}
           </p> */}
 
-          {del ? (
-            product.sizes ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {product.sizes.split("|").map((size, index) => (
-                  <button
-                    style={buttonStyle}
-                    key={index}
-                    onClick={() => removeSize(product.SKU, size)} // Acción al hacer clic
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p>Size Not Found</p>
-            )
+          {product.size_prices ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px",padding:"1px",}}>
+              {product.size_prices.map((sizePrice, index) => (
+                <div key={index} style={{border: "1px solid white", padding:"3px",fontSize:"14px",borderRadius:"5px"}}>
+                  <p style={{ margin: "0", padding: "1px 0",  }}>
+                    {sizePrice.size ? sizePrice.size : "Size not found"}
+                  </p>
+                  <p style={{ margin: "0", padding: "1px 0" }}>
+                    {sizePrice.price ? sizePrice.price+"€" : "Price not found"}
+                  </p>
+                </div>
+              ))}
+            </div>
           ) : (
-            <p style={textStyle}>
-              {product.sizes
-                ? product.sizes
-                    .split("|")
-                    .map((size) => `${size}`)
-                    .join(", ")
-                : "Size Not Found"}
-            </p>
+            <p>Size Not Found</p>
           )}
 
-          <p style={textStyle}>
-            {product.price ? product.price + " €" : "Price Not Found"}
-          </p>
         </div>
       ))}
     </>
