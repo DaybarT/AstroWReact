@@ -7,7 +7,8 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 // const { HypeBoost, Laced } = require("../scrappers/Scrappers");
 
-const dbPath = path.resolve(process.cwd(), "public/data/dbShoes.csv");
+// const dbPath = path.resolve(process.cwd(), "public/data/dbShoes.csv");
+const dbPath = import.meta.env.dbShoes;
 
 export async function GET() {
   try {
