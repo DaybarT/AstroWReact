@@ -1,6 +1,15 @@
-import React from "react";
+import React,{ useState, useEffect } from "react";
 
-export default function Editor({ ENV, productData, setProductData }) {
+
+export default function Editor() {
+
+  const [csv,setCsv] = useState("");
+
+  //  useEffect(() => {
+      
+  //   }, []);
+
+
   const card_img = {
     width: window.innerWidth <= 768 ? "100px" : "200px",
     borderRadius: "10px",

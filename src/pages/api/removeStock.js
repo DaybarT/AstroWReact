@@ -6,10 +6,9 @@ import csvParser from 'csv-parser';
 import { format } from 'fast-csv';
 
 const dbPath = import.meta.env.dbShoes;
-const stockPath = import.meta.env.stock;
 
 export async function POST({ newData }) {
-  if (!fs.existsSync(stockPath)) {
+  if (!fs.existsSync(dbPath)) {
     console.log("El archivo no existe. No hay stock para eliminar.");
     return;
   }
@@ -18,7 +17,7 @@ export async function POST({ newData }) {
     const parsedData = [];
     let headers = [];
 
-    fs.createReadStream(stockPath)
+    fs.createReadStream(dbPath)
       .pipe(csvParser({ headers: false, skipEmptyLines: true }))
       .on('data', (row) => {
         if (headers.length === 0) {
@@ -48,7 +47,7 @@ export async function POST({ newData }) {
   console.log(`El SKU ${SKU} ha sido eliminado del stock.`);
 
   // Escribir los datos actualizados de vuelta al archivo CSV
-  const writeStream = fs.createWriteStream(stockPath);
+  const writeStream = fs.createWriteStream(dbPath);
   const csvStream = format({ headers: true });
 
   csvStream.pipe(writeStream);

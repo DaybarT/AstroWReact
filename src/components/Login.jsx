@@ -19,7 +19,7 @@ export default function Login({ ENV, setSession,setData }) {
 
       const result = await response.json();
       console.log(result);
-      if (result.success) {
+      if (result.status) {
         setSession(true);
       }
       if (!response.ok) {
@@ -84,6 +84,7 @@ export default function Login({ ENV, setSession,setData }) {
     color: "#5e6681",
     boxShadow: "0 8px 24px 0 rgb(255 235 167 / 20%)",
     transition: "all .3s ease-in-out",
+    cursor:"pointer"
   };
   return (
     <div style={cardStyle}>

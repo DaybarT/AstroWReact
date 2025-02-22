@@ -2,89 +2,40 @@ export const prerender = false;
 import fs from "fs";
 import path from "path";
 import csvParser from "csv-parser";
-const userPath = import.meta.env.auth;
-import bcrypt from "bcryptjs";
+import { GoogleSpreadsheet } from "google-spreadsheet";
+import { JWT } from "google-auth-library";
 
 export async function POST({ request }) {
-  const filePath = path.resolve(userPath);
-  const users = [];
 
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(filePath)
-      .pipe(csvParser())
-      .on("data", (row) => {
-        users.push(row);
-      })
-      .on("end", async () => {
-        try {
-          const { user, password } = await request.json();
+  const cred = await request.json();
 
-          if (!user || !password) {
-            return resolve(
-              new Response(JSON.stringify({ error: "Faltan datos" }), {
-                status: 400,
-              })
-            );
-          }
-
-          const foundUser = users.find(
-            (u) =>
-              (u.user || "").trim().toLowerCase() ===
-              user.trim().toLowerCase()
-          );
-
-          if (!foundUser) {
-            return resolve(
-              new Response(JSON.stringify({ error: "user no encontrado" }), {
-                status: 404,
-              })
-            );
-          }
-
-          bcrypt.compare(password, foundUser.password, (err, result) => {
-            if (err) {
-              console.error("Error al verificar la contraseña:", err);
-              return reject(
-                new Response(JSON.stringify({ error: "Error interno" }), {
-                  status: 500,
-                })
-              );
-            }
-
-            if (result) {
-              console.log("Autenticación exitosa");
-              resolve(
-                new Response(
-                  JSON.stringify({ success: "Inicio de sesión exitoso" }),
-                  { status: 200 }
-                )
-              );
-            } else {
-              console.log("Contraseña incorrecta");
-              resolve(
-                new Response(
-                  JSON.stringify({ error: "Contraseña incorrecta" }),
-                  { status: 401 }
-                )
-              );
-            }
-          });
-        } catch (err) {
-          console.error("Error en el servidor:", err);
-          resolve(
-            new Response(JSON.stringify({ error: err.message }), {
-              status: 500,
-            })
-          );
-        }
-      })
-      .on("error", (err) => {
-        console.error("Error leyendo el archivo:", err);
-        reject(
-          new Response(JSON.stringify({ error: err.message }), { status: 500 })
-        );
+  const auth = new JWT({
+        email: import.meta.env.CLIENT_EMAIL,
+        key: import.meta.env.PRIVATE_KEY,
+        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
       });
-  });
+
+      const doc = new GoogleSpreadsheet(import.meta.env.SHEET_ID, auth);
+
+      // Cargar información de la hoja
+      await doc.loadInfo();
+  
+      // Obtener la hoja llamada "INSTOCK"
+      const sheet = doc.sheetsByTitle["DATA"];
+      if (!sheet) throw new Error("No se encontró la hoja INSTOCK");
+
+      await sheet.loadCells("O24:O25");
+
+      // Obtener valores de las celdas
+      const cellO24 = sheet.getCell(23, 14).value; // Fila 24, Columna O (Índice base 0)
+      const cellO25 = sheet.getCell(24, 14).value; // Fila 25, Columna O (Índice base 0)
+
+      if (cred.user === cellO24 && cred.password === cellO25){
+        return new Response(JSON.stringify({ status: true }),);
+      }else{
+        return new Response(JSON.stringify({ status: false }),);
+      }
+
 }
 
 // export default async function login() {

@@ -13,7 +13,8 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   }, []);
 
   const divStyle = {
-    width: isMobile ? "150px" : "200px", // Más pequeña en móviles
+    fontSize: isMobile ? "10px" : "",
+    width: isMobile ? "150px" : "300px", // Más pequeña en móviles
     borderRadius: "5px",
     backgroundColor: "#090b11", // Manteniendo la opacidad
     color: "white",
@@ -26,7 +27,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
   };
 
   const card_img = {
-    width: isMobile ? "120px" : "200px", // Imagen más pequeña en móviles
+    width: isMobile ? "150px" : "300px", // Imagen más pequeña en móviles
     borderRadius: "10px",
     margin: "0", // Eliminar espacio adicional alrededor de la imagen
   };
@@ -35,10 +36,6 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
     margin: "5px 0", // Añadir un pequeño espacio entre los textos
     padding: "0", // Eliminar padding adicional
     color: "white",
-  };
-
-  const size_PriceStyle = {
-
   };
 
   const removeSize = async (sku_d, size_d) => {
@@ -104,10 +101,10 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px",padding:"1px",}}>
               {product.size_prices.map((sizePrice, index) => (
                 <div key={index} style={{border: "1px solid white", padding:"3px",fontSize:"14px",borderRadius:"5px"}}>
-                  <p style={{ margin: "0", padding: "1px 0",  }}>
+                  <p style={{ margin: "0", padding: "0px 0", fontSize: isMobile ? "10px" : "", }}>
                     {sizePrice.size ? sizePrice.size : "Size not found"}
                   </p>
-                  <p style={{ margin: "0", padding: "1px 0" }}>
+                  <p style={{ margin: "0", padding: "0px 0",fontSize: isMobile ? "10px" : "", }}>
                     {sizePrice.price ? sizePrice.price+"€" : "Price not found"}
                   </p>
                 </div>

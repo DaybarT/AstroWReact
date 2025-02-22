@@ -29,13 +29,13 @@ export default function Searcher() {
                 style={{ ...searcherStyle, width: "10%" }} 
             />
             <input
-                placeholder="Talla"
+                placeholder="model"
                 name="text"
                 type="text"
                 style={{ ...searcherStyle, width: "10%" }} 
             />
             <input
-                placeholder="Precio"
+                placeholder="src de imagen"
                 name="text"
                 type="text"
                 style={{ ...searcherStyle, width: "10%" }} 

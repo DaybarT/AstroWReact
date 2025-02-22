@@ -18,8 +18,11 @@ export default function App({ ENV, stock }) {
   
   const goChange = () => {
     console.log(productData);
+    //para editar la bbdd, el csv
   };
 
+ 
+  
   return (
     <div className="container">
       <div className="div-login" style={{ marginBottom: "50px" }}>
@@ -41,7 +44,14 @@ export default function App({ ENV, stock }) {
   </button>
 )}
       <div className="div-father">
-        {edit ? (<><Editor ENV={ENV} productData={productData} setProductData={setProductData} /></>) : (<><Card productData={productData} setProductData={setProductData} ENV={ENV} edit={edit} del={del}/></>)}
+        {/* {edit ? (<><Editor ENV={ENV} productData={productData} setProductData={setProductData} /></>) : (<><Card productData={productData} setProductData={setProductData}/></>)} */}
+        <Card productData={productData} setProductData={setProductData}/>
+
+        {del ? (<><Editor mode={del} /></>) : (<></>)}  
+        {/* del no hace nada. */}
+
+        {edit ? (<><Editor mode={edit}/></>) : (<></>)}
+         {/* edit no hace nada. */}
       </div>
     </div>
   );

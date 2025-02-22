@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
 import { format } from "fast-csv";
 
-const dbPath = "../../../public/data/dbShoes.csv"
+const dbPath = import.meta.env.dbShoes;
 
 // Función para agregar datos al archivo CSV
 
