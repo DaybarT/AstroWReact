@@ -6,6 +6,7 @@ const ENV = import.meta.env;
 // Obtiene los datos de la API en el servidor antes de renderizar la página
 const response = await fetch(ENV.BASE_URL + ENV.getStock);
 const stock = await response.json();
+console.log(ENV);
 // Pasar los datos al componente Card
 ---
 

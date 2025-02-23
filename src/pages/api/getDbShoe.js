@@ -4,8 +4,8 @@ import csvParser from "csv-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const dbPath = import.meta.env.dbShoes;
-// const dbPath = path.resolve("../../../data/dbShoes.csv");
+// const dbPath = import.meta.env.dbShoes;
+const dbPath = path.join(process.cwd(), 'src', 'data', 'dbShoes.csv');
 
 export async function GET() {
   if (!fs.existsSync(dbPath)) {

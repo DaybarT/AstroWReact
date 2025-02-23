@@ -29,3 +29,4 @@ snkrs-451511-692af4c2ea53.json
 
 #evitamos subir el algoritmo de hasheo
 src/pages/api/files.js
+.vercel

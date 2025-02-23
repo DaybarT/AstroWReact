@@ -7,8 +7,9 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 // const { HypeBoost, Laced } = require("../scrappers/Scrappers");
 
-// const dbPath = path.resolve(process.cwd(), "public/data/dbShoes.csv");
-const dbPath = import.meta.env.dbShoes;
+// const dbPath = import.meta.env.dbShoes;
+const dbPath = path.join(process.cwd(), 'src', 'data', 'dbShoes.csv');
+
 
 export async function GET() {
   try {
@@ -63,9 +64,15 @@ export async function GET() {
       }
     }
 
+    // Devolver la respuesta de éxito con los datos
     return new Response(JSON.stringify(shoes), { status: 200 });
   } catch (error) {
+    // Si ocurre un error, devolver un mensaje de error
     console.error("Error al acceder a Google Sheets:", error);
+    return new Response(
+      JSON.stringify({ error: "Ocurrió un error al procesar los datos." }),
+      { status: 500 }
+    );
   }
 }
 

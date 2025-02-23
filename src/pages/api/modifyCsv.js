@@ -5,7 +5,8 @@ import { fileURLToPath } from "url";
 import csvParser from "csv-parser";
 import { format } from "fast-csv";
 
-const dbPath = import.meta.env.dbShoes;
+// const dbPath = import.meta.env.dbShoes;
+const dbPath = path.join(process.cwd(), 'src', 'data', 'dbShoes.csv');
 
 export async function POST({request}) {
     try {
