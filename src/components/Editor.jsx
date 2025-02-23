@@ -8,7 +8,7 @@ export default function Editor({ ENV, setEdit}) {
   useEffect(() => {
     const fetchDb = async () => {
       try {
-        const response = await fetch(ENV.BASE_URL + ENV.getDbShoe);
+        const response = await fetch(ENV.BASE_URL + "/api/getDbShoe");
         const stock = await response.json();
         console.log(stock);
         setCsv(stock);
@@ -62,7 +62,7 @@ export default function Editor({ ENV, setEdit}) {
 
   const handleKeyDown = async (event) => {
     if (event.key === "Enter") {
-      const response = await fetch(ENV.BASE_URL + ENV.modifyCsv, {
+      const response = await fetch(ENV.BASE_URL + "/api/modifyCsv", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -85,7 +85,7 @@ export default function Editor({ ENV, setEdit}) {
 
   const removeData = async (sku_d) => {
     try {
-      const response = await fetch(ENV.BASE_URL + ENV.removeData, {
+      const response = await fetch(ENV.BASE_URL + "/api/removeData", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

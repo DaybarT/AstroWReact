@@ -5,6 +5,7 @@ import Login from "../components/Login";
 import Navbar from "../components/Navbar";
 import Adder from "../components/Adder";
 import Editor from "../components/Editor";
+import Icons from "../components/Icons";
 
 export default function App({ ENV, stock }) {
   const [data, setData] = useState(false);
@@ -33,6 +34,12 @@ export default function App({ ENV, stock }) {
           <NeonCheckbox setData={setData} data={data} />
         )}
       </div>
+      <div style={{display:"flex"}}>
+        <Icons icon={"Discord"} />
+        <Icons icon={"Instagram"} />
+      </div>
+
+      <br />
       <div className="div-father">
         {del ? (
           <Card

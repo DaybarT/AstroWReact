@@ -7,7 +7,7 @@ export default function Adder({ ENV, csv, setCsv }) {
 
   const addData = async () => {
     try {
-      const response = await fetch(ENV.BASE_URL + ENV.addData, {
+      const response = await fetch(ENV.BASE_URL + "/api/addData", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
