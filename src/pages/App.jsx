@@ -34,11 +34,17 @@ export default function App({ ENV, stock }) {
           <NeonCheckbox setData={setData} data={data} />
         )}
       </div>
-      <div style={{display:"flex"}}>
-        <Icons icon={"Discord"} />
-        <Icons icon={"Instagram"} />
-      </div>
 
+      {data ? (
+        <></>
+      ) : (
+        <>
+          <div style={{ display: "flex" }}>
+            <Icons icon={"Discord"} />
+            <Icons icon={"Instagram"} />
+          </div>
+        </>
+      )}
       <br />
       <div className="div-father">
         {del ? (
