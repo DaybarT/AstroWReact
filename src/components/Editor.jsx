@@ -10,7 +10,6 @@ export default function Editor({ ENV, setEdit}) {
       try {
         const response = await fetch(ENV.BASE_URL + "/api/getDbShoe");
         const stock = await response.json();
-        console.log(stock);
         setCsv(stock);
       } catch (error) {
         console.error("Error al obtener el stock:", error);
@@ -57,7 +56,6 @@ export default function Editor({ ENV, setEdit}) {
     const updatedDb = [...csv];
     updatedDb[index][field] = value;
     setCsv(updatedDb);
-    console.log(csv);
   };
 
   const handleKeyDown = async (event) => {

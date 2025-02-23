@@ -18,7 +18,7 @@ export default function Login({ ENV, setSession,setData }) {
       });
 
       const result = await response.json();
-      console.log(result);
+
       if (result.status) {
         setSession(true);
       }
