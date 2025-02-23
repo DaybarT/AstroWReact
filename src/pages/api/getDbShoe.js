@@ -4,10 +4,10 @@ import csvParser from "csv-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// const dbPath = import.meta.env.dbShoes;
-const dbPath = path.resolve("../../../public/data/dbShoes.csv");
+const dbPath = import.meta.env.dbShoes;
+// const dbPath = path.resolve("../../../data/dbShoes.csv");
 
-export async function data() {
+export async function GET() {
   if (!fs.existsSync(dbPath)) {
     console.log("Error: Archivo de stock no encontrado");
     return new Response(JSON.stringify({ error: "Archivo de stock no encontrado" }), { status: 404 });
@@ -22,7 +22,6 @@ export async function data() {
         data.push(row);
       })
       .on("end", () => {
-        console.log("Datos leídos:", data);
         resolve(new Response(JSON.stringify(data), { status: 200 }));
       })
       .on("error", (err) => {

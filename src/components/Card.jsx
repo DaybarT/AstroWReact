@@ -12,6 +12,8 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+
+
   const divStyle = {
     fontSize: isMobile ? "10px" : "",
     width: isMobile ? "150px" : "300px", // Más pequeña en móviles
@@ -38,40 +40,6 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
     color: "white",
   };
 
-  const removeSize = async (sku_d, size_d) => {
-    try {
-      const response = await fetch(ENV.BASE_URL + ENV.removeStockSize, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          SKU: sku_d,
-          sizes: [Number(size_d)],
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setProductData((prevData) =>
-          prevData.map((product) =>
-            product.SKU === sku_d
-              ? {
-                  ...product,
-                  sizes: product.sizes
-                    .split("|")
-                    .filter((size) => size !== size_d)
-                    .join("|"),
-                }
-              : product
-          )
-        );
-      }
-    } catch (error) {
-      // console.error("Error al eliminar talla:", error);
-      console.log(error);
-    }
-  };
-
   return (
     <>
       {productData.map((product, index) => (
@@ -81,9 +49,7 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
             style={card_img}
             alt={product.img ? product.title : "Image Not Found"}
           />
-          <p style={{ textStyle }}>
-            {product.SKU ? product.SKU : "SKU Not Found"}
-          </p>
+
           <p style={textStyle}>
             {product.model ? product.model : "Model not found"}
           </p>
@@ -98,14 +64,43 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
           </p> */}
 
           {product.size_prices ? (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px",padding:"1px",}}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                padding: "1px",
+              }}
+            >
               {product.size_prices.map((sizePrice, index) => (
-                <div key={index} style={{border: "1px solid white", padding:"3px",fontSize:"14px",borderRadius:"5px"}}>
-                  <p style={{ margin: "0", padding: "0px 0", fontSize: isMobile ? "10px" : "", }}>
+                <div
+                  key={index}
+                  style={{
+                    border: "1px solid white",
+                    padding: "3px",
+                    fontSize: "14px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: "0",
+                      padding: "0px 0",
+                      fontSize: isMobile ? "10px" : "",
+                    }}
+                  >
                     {sizePrice.size ? sizePrice.size : "Size not found"}
                   </p>
-                  <p style={{ margin: "0", padding: "0px 0",fontSize: isMobile ? "10px" : "", }}>
-                    {sizePrice.price ? sizePrice.price+"€" : "Price not found"}
+                  <p
+                    style={{
+                      margin: "0",
+                      padding: "0px 0",
+                      fontSize: isMobile ? "10px" : "",
+                    }}
+                  >
+                    {sizePrice.price
+                      ? sizePrice.price + "€"
+                      : "Price not found"}
                   </p>
                 </div>
               ))}
@@ -113,7 +108,6 @@ export default function Card({ ENV, productData, edit, del, setProductData }) {
           ) : (
             <p>Size Not Found</p>
           )}
-
         </div>
       ))}
     </>

@@ -9,7 +9,8 @@ const dbPath = import.meta.env.dbShoes;
 
 // Función para agregar datos al archivo CSV
 
-export async function addData( newData ) {
+export async function POST({ request }) {
+  const { SKU, model, img } = await request.json();
   const results = [];
   let headers = []; // Para almacenar los encabezados manualmente
 
@@ -54,21 +55,21 @@ export async function addData( newData ) {
   });
 
   // Verificar si el SKU ya existe en los datos leídos
-  const existingItem = data.find((item) => item.SKU === newData.SKU);
+  const existingItem = data.find((item) => item.SKU === SKU);
 
   if (existingItem) {
-    console.log(`El SKU ${newData.SKU} ya existe. No se añadirá.`);
-    return; // Si el SKU ya existe, no lo añadimos
+    console.log(`El SKU ${SKU} ya existe. No se añadirá.`);
+    return new Response(JSON.stringify({ message: `El SKU ${SKU} ya existe. No se añadirá.`, status: "error" }), { status: 400 });
   }
 
   // Si el SKU no existe, añadir el nuevo producto
   results.push({
-    SKU: newData.SKU,
-    model: newData.model,
-    img: newData.img,
+    SKU: SKU,
+    model: model,
+    img: img,
   });
 
-  console.log(`Nuevo SKU agregado: ${newData.SKU}`);
+  console.log(`Nuevo SKU agregado: ${SKU}`);
 
   // Escribir los datos actualizados de vuelta al archivo CSV
   const writeStream = fs.createWriteStream(dbPath);
@@ -86,13 +87,7 @@ export async function addData( newData ) {
   });
 
   csvStream.end(); // Finalizamos la escritura
+
+  // Devolver una respuesta de éxito
+  return new Response(JSON.stringify({ message: `El SKU ${SKU} ha sido agregado correctamente.`, status: "success" }), { status: 200 });
 }
-
-// Ejemplo de uso:
- const newData = {
-  SKU: "HQ3073-101",
-  model: "Nike Air Max",
-  img: "https://example.com/image.jpg"
-};
-
-addData(newData);  

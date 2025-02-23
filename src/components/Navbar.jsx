@@ -11,29 +11,29 @@ export default function Navbar({
     if (value === "edit") {
       setEdit(true);
       setAdd(false);
-      setDel(false);
+      // setDel(false);
     }
-    if (value === "add") {
-      setAdd(true);
-      setEdit(false);
-      setDel(false);
-    }
-    if (value === "delete") {
-      setEdit(false);
-      setAdd(false);
-      setDel(true);
-    }
+    // if (value === "add") {
+    //   setAdd(true);
+    //   setEdit(false);
+    //   // setDel(false);
+    // }
+    // if (value === "delete") {
+    //   setEdit(false);
+    //   setAdd(false);
+    //   setDel(true);
+    // }
     if (value === "home") {
       setEdit(false);
       setAdd(false);
-      setDel(false);
+      // setDel(false);
     }
   };
 
   const off = () => {
     setEdit(false);
     setAdd(false);
-    setDel(false);
+    // setDel(false);
     setData(false);
     setSession(false);
   };
@@ -111,7 +111,7 @@ export default function Navbar({
         </svg>
       </button>
 
-      <button
+      {/* <button
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.currentTarget.style.transform = buttonHoverStyle.transform)
@@ -133,7 +133,7 @@ export default function Navbar({
             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           ></path>
         </svg>
-      </button>
+      </button> */}
 
       <button
         style={buttonStyle}
@@ -157,7 +157,7 @@ export default function Navbar({
         </svg>
       </button>
 
-      <button
+      {/* <button
         style={buttonStyle}
         onMouseEnter={(e) =>
           (e.currentTarget.style.transform = buttonHoverStyle.transform)
@@ -179,7 +179,7 @@ export default function Navbar({
             d="M6 12h12"
           ></path>
         </svg>
-      </button>
+      </button> */}
 
       <button
         style={buttonStyle}

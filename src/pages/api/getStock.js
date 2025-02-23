@@ -58,9 +58,8 @@ export async function GET() {
         if (ifExist) {
           newShoe.img = ifExist.img;
           newShoe.model = ifExist.model;
+          shoes.push(newShoe);
         }
-
-        shoes.push(newShoe);
       }
     }
 

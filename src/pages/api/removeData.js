@@ -7,12 +7,29 @@ import { format } from 'fast-csv';
 
 const dbPath = import.meta.env.dbShoes;
 
-export async function POST({ newData }) {
+export async function POST({ request }) {
+  // Verificar si el archivo existe
   if (!fs.existsSync(dbPath)) {
     console.log("El archivo no existe. No hay stock para eliminar.");
-    return;
+    return new Response(
+      JSON.stringify({status: false, message: "El archivo no existe. No hay stock para eliminar." }), 
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
+  // Obtener el SKU desde el cuerpo de la solicitud
+  const { SKU } = await request.json();
+
+  // Verificar si se proporcionó un SKU
+  if (!SKU) {
+    console.log("No se proporcionó un SKU para eliminar.");
+    return new Response(
+      JSON.stringify({status: false, message: "No se proporcionó un SKU para eliminar." }), 
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  // Leer y procesar el archivo CSV
   const data = await new Promise((resolve, reject) => {
     const parsedData = [];
     let headers = [];
@@ -37,11 +54,16 @@ export async function POST({ newData }) {
       .on('error', (err) => reject("Error al leer el archivo CSV: " + err));
   });
 
+  // Filtrar los datos eliminando el SKU
   const filteredData = data.filter(item => item.SKU !== SKU);
 
+  // Si no se encontró el SKU
   if (filteredData.length === data.length) {
     console.log(`El SKU ${SKU} no se encontró en el stock.`);
-    return;
+    return new Response(
+      JSON.stringify({ status: false,message: `El SKU ${SKU} no se encontró en el stock.` }),
+      { status: 404, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
   console.log(`El SKU ${SKU} ha sido eliminado del stock.`);
@@ -56,4 +78,10 @@ export async function POST({ newData }) {
   });
 
   csvStream.end();
+
+  // Responder con éxito
+  return new Response(
+    JSON.stringify({ status: true,message: `El SKU ${SKU} ha sido eliminado correctamente.` }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } }
+  );
 }
