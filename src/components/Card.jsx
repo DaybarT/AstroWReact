@@ -49,6 +49,9 @@ export default function Card({productData}) {
             style={card_img}
             alt={product.img ? product.title : "Image Not Found"}
           />
+           <p style={textStyle}>
+            {product.SKU ? product.SKU : "SKU not found"}
+          </p>
 
           <p style={textStyle}>
             {product.model ? product.model : "Model not found"}
