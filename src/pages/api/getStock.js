@@ -8,8 +8,7 @@ import { JWT } from "google-auth-library";
 // const { HypeBoost, Laced } = require("../scrappers/Scrappers");
 
 // const dbPath = import.meta.env.dbShoes;
-const dbPath = path.join(process.cwd(), 'src', 'data', 'dbShoes.csv');
-
+const dbPath = path.join(process.cwd(), "src", "data", "dbShoes.csv");
 
 export async function GET() {
   try {
@@ -30,11 +29,15 @@ export async function GET() {
     // Obtener la hoja llamada "INSTOCK"
     const sheet = doc.sheetsByTitle["INSTOCK"];
     if (!sheet) throw new Error("No se encontró la hoja INSTOCK");
-
     // Leer las filas desde A2 hasta D100
-    const rows = await sheet.getRows({ limit: 99 });
+    const instock = await sheet.getRows({ limit: 99 });
 
-    for (const row of rows) {
+    const sheetDatabase = doc.sheetsByTitle["DATA_SHOES"];
+     // Obtener todas las filas (desde A2 hasta C300) para comparar con el SKU de newShoe
+    const database = await sheetDatabase.getRows({ offset: 1, limit: 299 });
+
+
+    for (const row of instock) {
       const SKU = row._rawData[0];
       const model = row._rawData[1];
       const size = row._rawData[2];
@@ -53,13 +56,15 @@ export async function GET() {
           model,
           size_prices: [{ size, price }],
         };
+       
+        // Buscar el SKU en el array `database`
+        let ifExist = database.find((item) => item._rawData[0] === newShoe.SKU);
 
-        // Buscar en la base de datos si hay más datos (imagen, modelo, etc.)
-        const ifExist = await findDataExist(SKU);
+        // Si encontramos un zapato con el mismo SKU, asignamos la imagen y el modelo
         if (ifExist) {
-          newShoe.img = ifExist.img;
-          newShoe.model = ifExist.model;
-          shoes.push(newShoe);
+          newShoe.img = ifExist._rawData[2]; // Asignamos la imagen desde la columna C (índice 2)
+          newShoe.model = ifExist._rawData[1]; // Si quieres asegurarte de que el modelo se actualice (aunque ya lo tienes), lo asignas aquí
+          shoes.push(newShoe); // Agregar el nuevo zapato al array `shoes`
         }
       }
     }
@@ -76,138 +81,138 @@ export async function GET() {
   }
 }
 
-async function findDataExist(newData) {
-  try {
-    // Usamos una Promise para envolver la lectura del archivo CSV
-    const fileData = await new Promise((resolve, reject) => {
-      const results = [];
-      let headers = [];
+// async function findDataExist(newData) {
+//   try {
+//     // Usamos una Promise para envolver la lectura del archivo CSV
+//     const fileData = await new Promise((resolve, reject) => {
+//       const results = [];
+//       let headers = [];
 
-      // Leer el archivo CSV, asegurándose de que las cabeceras se usen correctamente
-      fs.createReadStream(dbPath)
-        .pipe(csvParser({ headers: false, skipEmptyLines: true })) // Deshabilitamos los encabezados automáticos
-        .on("data", (row) => {
-          // Si es la primera fila, asignamos los encabezados manualmente
-          if (headers.length === 0) {
-            headers = Object.values(row); // Convertimos el objeto en un array de valores
-          } else {
-            // Para las filas siguientes, mapeamos los valores a los encabezados
-            const rowObj = {};
+//       // Leer el archivo CSV, asegurándose de que las cabeceras se usen correctamente
+//       fs.createReadStream(dbPath)
+//         .pipe(csvParser({ headers: false, skipEmptyLines: true })) // Deshabilitamos los encabezados automáticos
+//         .on("data", (row) => {
+//           // Si es la primera fila, asignamos los encabezados manualmente
+//           if (headers.length === 0) {
+//             headers = Object.values(row); // Convertimos el objeto en un array de valores
+//           } else {
+//             // Para las filas siguientes, mapeamos los valores a los encabezados
+//             const rowObj = {};
 
-            // Usamos Object.entries() para recorrer las claves y asignar los valores correctamente
-            Object.entries(row).forEach(([index, value]) => {
-              const header = headers[index];
-              rowObj[header] = value; // Asignamos el valor a la clave del encabezado
-            });
+//             // Usamos Object.entries() para recorrer las claves y asignar los valores correctamente
+//             Object.entries(row).forEach(([index, value]) => {
+//               const header = headers[index];
+//               rowObj[header] = value; // Asignamos el valor a la clave del encabezado
+//             });
 
-            if (rowObj.SKU && rowObj.SKU.trim() !== "SKU") {
-              results.push(rowObj); // Añadimos cada fila válida al array de resultados
-            }
-          }
-        })
-        .on("end", () => {
-          resolve(results); // Resolvemos la promesa con los resultados del CSV
-        })
-        .on("error", (err) => {
-          reject("Error al leer el archivo CSV: " + err); // Rechazamos si hay un error
-        });
-    });
+//             if (rowObj.SKU && rowObj.SKU.trim() !== "SKU") {
+//               results.push(rowObj); // Añadimos cada fila válida al array de resultados
+//             }
+//           }
+//         })
+//         .on("end", () => {
+//           resolve(results); // Resolvemos la promesa con los resultados del CSV
+//         })
+//         .on("error", (err) => {
+//           reject("Error al leer el archivo CSV: " + err); // Rechazamos si hay un error
+//         });
+//     });
 
-    // Verificar si hay datos en el archivo
-    if (fileData.length === 0) {
-      console.log("No se encontraron datos en el archivo.");
-      return null; // Si el archivo está vacío, retornamos null
-    }
+//     // Verificar si hay datos en el archivo
+//     if (fileData.length === 0) {
+//       console.log("No se encontraron datos en el archivo.");
+//       return null; // Si el archivo está vacío, retornamos null
+//     }
 
-    // Asegurarnos de hacer un trim() de los valores de SKU para evitar errores por espacios adicionales
-    const existingItem = fileData.find(
-      (item) =>
-        item.SKU && item.SKU.trim().toUpperCase() === newData.toUpperCase()
-    );
+//     // Asegurarnos de hacer un trim() de los valores de SKU para evitar errores por espacios adicionales
+//     const existingItem = fileData.find(
+//       (item) =>
+//         item.SKU && item.SKU.trim().toUpperCase() === newData.toUpperCase()
+//     );
 
-    // Devolvemos el objeto si lo encontramos, o false si no
-    return existingItem || false;
-  } catch (error) {
-    console.error("Error al leer o procesar el archivo:", error);
-    return null; // Si ocurre algún error, devolvemos null
-  }
-}
+//     // Devolvemos el objeto si lo encontramos, o false si no
+//     return existingItem || false;
+//   } catch (error) {
+//     console.error("Error al leer o procesar el archivo:", error);
+//     return null; // Si ocurre algún error, devolvemos null
+//   }
+// }
 
-export async function addData(newData) {
-  const results = [];
-  let headers = []; // Para almacenar los encabezados manualmente
+// export async function addData(newData) {
+//   const results = [];
+//   let headers = []; // Para almacenar los encabezados manualmente
 
-  // Verificar si el archivo CSV existe
-  if (!fs.existsSync(dbPath)) {
-    // Si no existe, creamos un archivo vacío con las cabeceras
-    const header = ["SKU", "model", "img"]; // Aquí añadimos las columnas
-    const writeStream = fs.createWriteStream(dbPath);
-    format([header], { headers: false }).pipe(writeStream);
-    console.log("Archivo creado con cabeceras.");
-  }
+//   // Verificar si el archivo CSV existe
+//   if (!fs.existsSync(dbPath)) {
+//     // Si no existe, creamos un archivo vacío con las cabeceras
+//     const header = ["SKU", "model", "img"]; // Aquí añadimos las columnas
+//     const writeStream = fs.createWriteStream(dbPath);
+//     format([header], { headers: false }).pipe(writeStream);
+//     console.log("Archivo creado con cabeceras.");
+//   }
 
-  // Leer el archivo CSV y convertirlo en un array de objetos
-  const data = await new Promise((resolve, reject) => {
-    fs.createReadStream(dbPath)
-      .pipe(csvParser({ headers: false, skipEmptyLines: true })) // Deshabilitamos los encabezados automáticos
-      .on("data", (row) => {
-        // Si es la primera fila, asignamos los encabezados manualmente
-        if (headers.length === 0) {
-          headers = Object.values(row); // Convertimos el objeto en un array de valores
-        } else {
-          // Para las filas siguientes, mapeamos los valores a los encabezados
-          const rowObj = {};
+//   // Leer el archivo CSV y convertirlo en un array de objetos
+//   const data = await new Promise((resolve, reject) => {
+//     fs.createReadStream(dbPath)
+//       .pipe(csvParser({ headers: false, skipEmptyLines: true })) // Deshabilitamos los encabezados automáticos
+//       .on("data", (row) => {
+//         // Si es la primera fila, asignamos los encabezados manualmente
+//         if (headers.length === 0) {
+//           headers = Object.values(row); // Convertimos el objeto en un array de valores
+//         } else {
+//           // Para las filas siguientes, mapeamos los valores a los encabezados
+//           const rowObj = {};
 
-          // Usamos Object.entries() para recorrer las claves y asignar los valores correctamente
-          Object.entries(row).forEach(([index, value]) => {
-            const header = headers[index];
-            rowObj[header] = value; // Asignamos el valor a la clave del encabezado
-          });
+//           // Usamos Object.entries() para recorrer las claves y asignar los valores correctamente
+//           Object.entries(row).forEach(([index, value]) => {
+//             const header = headers[index];
+//             rowObj[header] = value; // Asignamos el valor a la clave del encabezado
+//           });
 
-          if (rowObj.SKU && rowObj.SKU.trim() !== "SKU") {
-            results.push(rowObj); // Añadimos cada fila válida al array de resultados
-          }
-        }
-      })
-      .on("end", () => {
-        resolve(results); // Resolvemos la promesa con los resultados del CSV
-      })
-      .on("error", (err) => {
-        reject("Error al leer el archivo CSV: " + err); // Rechazamos si hay un error
-      });
-  });
+//           if (rowObj.SKU && rowObj.SKU.trim() !== "SKU") {
+//             results.push(rowObj); // Añadimos cada fila válida al array de resultados
+//           }
+//         }
+//       })
+//       .on("end", () => {
+//         resolve(results); // Resolvemos la promesa con los resultados del CSV
+//       })
+//       .on("error", (err) => {
+//         reject("Error al leer el archivo CSV: " + err); // Rechazamos si hay un error
+//       });
+//   });
 
-  // Verificar si el SKU ya existe en los datos leídos
-  const existingItem = data.find((item) => item.SKU === newData.SKU);
+//   // Verificar si el SKU ya existe en los datos leídos
+//   const existingItem = data.find((item) => item.SKU === newData.SKU);
 
-  if (existingItem) {
-    console.log(`El SKU ${newData.SKU} ya existe. No se añadirá.`);
-    return false; // Si el SKU ya existe, no lo añadimos
-  }
+//   if (existingItem) {
+//     console.log(`El SKU ${newData.SKU} ya existe. No se añadirá.`);
+//     return false; // Si el SKU ya existe, no lo añadimos
+//   }
 
-  // Si el SKU no existe, añadir el nuevo producto
-  results.push({
-    SKU: newData.SKU,
-    model: newData.model,
-    img: newData.img,
-  });
+//   // Si el SKU no existe, añadir el nuevo producto
+//   results.push({
+//     SKU: newData.SKU,
+//     model: newData.model,
+//     img: newData.img,
+//   });
 
-  console.log(`Nuevo SKU agregado: ${newData.SKU}`);
+//   console.log(`Nuevo SKU agregado: ${newData.SKU}`);
 
-  // Escribir los datos actualizados de vuelta al archivo CSV
-  const writeStream = fs.createWriteStream(dbPath);
-  const csvStream = format({ headers: true });
+//   // Escribir los datos actualizados de vuelta al archivo CSV
+//   const writeStream = fs.createWriteStream(dbPath);
+//   const csvStream = format({ headers: true });
 
-  // Empezamos a escribir los datos al archivo
-  csvStream.pipe(writeStream);
+//   // Empezamos a escribir los datos al archivo
+//   csvStream.pipe(writeStream);
 
-  // Escribir todas las filas (incluyendo la nueva si es necesario)
-  results.forEach((item) => {
-    if (item.SKU && item.model && item.img) {
-      // Asegurarse de que los campos no estén vacíos
-      csvStream.write(item);
-    }
-  });
+//   // Escribir todas las filas (incluyendo la nueva si es necesario)
+//   results.forEach((item) => {
+//     if (item.SKU && item.model && item.img) {
+//       // Asegurarse de que los campos no estén vacíos
+//       csvStream.write(item);
+//     }
+//   });
 
-  csvStream.end(); // Finalizamos la escritura
-}
+//   csvStream.end(); // Finalizamos la escritura
+// }

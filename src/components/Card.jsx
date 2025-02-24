@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export default function Card({ ENV, productData, edit, del, setProductData }) {
+export default function Card({productData}) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
