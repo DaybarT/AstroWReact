@@ -16,7 +16,7 @@ export default function Card({productData}) {
 
   const divStyle = {
     fontSize: isMobile ? "10px" : "",
-    width: isMobile ? "150px" : "300px", // Más pequeña en móviles
+    width: isMobile ? "150px" : "260px", // Más pequeña en móviles
     borderRadius: "5px",
     backgroundColor: "#090b11", // Manteniendo la opacidad
     color: "white",
@@ -29,7 +29,7 @@ export default function Card({productData}) {
   };
 
   const card_img = {
-    width: isMobile ? "150px" : "300px", // Imagen más pequeña en móviles
+    width: isMobile ? "150px" : "250px", // Imagen más pequeña en móviles
     borderRadius: "10px",
     margin: "0", // Eliminar espacio adicional alrededor de la imagen
   };

@@ -34,8 +34,8 @@ export async function GET() {
 
     const sheetDatabase = doc.sheetsByTitle["DATA_SHOES"];
      // Obtener todas las filas (desde A2 hasta C300) para comparar con el SKU de newShoe
-    const database = await sheetDatabase.getRows({ offset: 1, limit: 299 });
-
+    const database = await sheetDatabase.getRows({ offset: 0, limit: 299 });
+    console.log(database);
 
     for (const row of instock) {
       const SKU = row._rawData[0];

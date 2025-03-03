@@ -13,7 +13,6 @@ export default function App({ ENV, stock }) {
           <Icons icon={"Instagram"} />
         </div>
       </div>
-      <br />
       <div className="div-father">
         <Card productData={productData} setProductData={setProductData} />
       </div>
